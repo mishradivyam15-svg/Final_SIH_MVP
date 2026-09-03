@@ -1,0 +1,154 @@
+# ==============================
+# Python
+# ==============================
+
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Python packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Testing / coverage
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+
+# Jupyter
+.ipynb_checkpoints/
+
+
+# ==============================
+# Environment / Secrets
+# ==============================
+
+.env
+.env.*
+!.env.example
+
+*.pem
+*.key
+
+
+# ==============================
+# IDE / Editor
+# ==============================
+
+.vscode/
+.idea/
+
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+
+# ==============================
+# Project Data
+# ==============================
+
+# Raw and processed datasets
+data/raw/*
+data/processed/*
+
+# Keep folder structure in Git
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+
+# Local/generated datasets
+*.csv
+*.xlsx
+*.xls
+*.parquet
+*.jsonl
+
+
+# ==============================
+# ML / AI Artifacts
+# ==============================
+
+# Trained models
+*.pkl
+*.pickle
+*.joblib
+*.pt
+*.pth
+*.onnx
+*.h5
+*.keras
+
+# Embeddings / vector stores
+embeddings/
+vector_store/
+chroma/
+.faiss/
+
+# Experiment outputs
+mlruns/
+mlartifacts/
+runs/
+artifacts/
+
+# Logs
+logs/
+*.log
+
+
+# ==============================
+# Backend
+# ==============================
+
+*.db
+*.sqlite
+*.sqlite3
+
+# FastAPI / Uvicorn temporary files
+.pytest_cache/
+
+
+# ==============================
+# Frontend / Node
+# ==============================
+
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Frontend build output
+dist/
+build/
+.next/
+.nuxt/
+.vite/
+
+# Local environment
+frontend/.env
+frontend/.env.*
+!frontend/.env.example
+
+
+# ==============================
+# OS Generated Files
+# ==============================
+
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Desktop.ini
