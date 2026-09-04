@@ -35,7 +35,7 @@ class RelationshipConfig:
     barrier_weight: float = 0.15
     site_weight: float = 0.10
     temporal_weight: float = 0.10
-    related_threshold: float = 0.70
+    related_threshold: float = 0.55
     missing_value_score: float = 0.50
     temporal_decay_days: float = 30.0
 
@@ -205,11 +205,18 @@ class RelationshipEngine:
             temporal_score,
         )
 
-        matching_context_fields = _matching_context_fields(source_report, target_report)
-        is_related = (
-            strength >= self.config.related_threshold
-            and bool(matching_context_fields)
+        matching_context_fields = _matching_context_fields(
+            source_report, target_report
         )
+        conflicting_context_fields = _conflicting_context_fields(
+            source_report, target_report
+        )
+
+        is_related = (
+    strength >= self.config.related_threshold
+    and bool(matching_context_fields)
+    and len(conflicting_context_fields) < 2
+)
 
         return RelationshipResult(
             source_report_id=_identifier(source_report.get("report_id")),
@@ -229,7 +236,7 @@ class RelationshipEngine:
                 matching_context_fields,
             ),
         )
-
+        
     def _relationship_strength(self, *scores: float) -> float:
         weights = (
             self.config.semantic_weight,
@@ -318,6 +325,22 @@ def _matching_context_fields(
         and normalize_signal(source_report.get(key)) is not None
     ]
 
+def _conflicting_context_fields(
+    source_report: SafetyReport, target_report: SafetyReport
+) -> list[str]:
+    """Return contextual labels known to contradict between two reports."""
+
+    return [
+        label
+        for label, key in CONTEXTUAL_FIELDS
+        if (
+            normalize_signal(source_report.get(key)) is not None
+            and normalize_signal(target_report.get(key)) is not None
+            and normalize_signal(source_report.get(key))
+            != normalize_signal(target_report.get(key))
+        )
+    ]
+
 
 def _unknown_context_fields(
     source_report: SafetyReport, target_report: SafetyReport
@@ -331,14 +354,36 @@ def _unknown_context_fields(
         or normalize_signal(target_report.get(key)) is None
     ]
 
-
 def _parse_date(value: object) -> date | None:
+    """Parse common safety-report date representations safely."""
+
+    if value is None:
+        return None
+
+    if isinstance(value, datetime):
+        return value.date()
+
+    if isinstance(value, date):
+        return value
+
     if not isinstance(value, str) or not value.strip():
         return None
-    try:
-        return datetime.fromisoformat(value.strip().replace("Z", "+00:00")).date()
-    except ValueError:
-        return None
+
+    text = value.strip()
+
+    for parser in (
+        lambda value: datetime.fromisoformat(
+            value.replace("Z", "+00:00")
+        ).date(),
+        lambda value: datetime.strptime(value, "%m/%d/%Y").date(),
+        lambda value: datetime.strptime(value, "%m/%d/%y").date(),
+    ):
+        try:
+            return parser(text)
+        except ValueError:
+            continue
+
+    return None
 
 
 def _text(value: object) -> str | None:
@@ -346,7 +391,26 @@ def _text(value: object) -> str | None:
 
 
 def _identifier(value: object) -> str:
-    return value.strip() if isinstance(value, str) else ""
+    """Convert a report identifier into a stable string representation."""
+
+    if value is None:
+        return ""
+
+    if isinstance(value, bool):
+        return ""
+
+    if isinstance(value, int):
+        return str(value)
+
+    if isinstance(value, float):
+        if value.is_integer():
+            return str(int(value))
+        return str(value)
+
+    if isinstance(value, str):
+        return value.strip()
+
+    return str(value).strip()
 
 
 def _bounded(value: float) -> float:
