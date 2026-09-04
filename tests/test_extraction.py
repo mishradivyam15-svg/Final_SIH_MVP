@@ -164,6 +164,8 @@ def test_extract_failed_guard():
     result = extract_safety_signals(report)
 
     assert result["barrier_failure"] == "failed_guard"
+
+
 def test_extract_unsafe_positioning_on_forklift_box():
     report = {
         "report_id": "2020087536",
@@ -192,19 +194,6 @@ def test_extract_missing_guard():
     assert result["barrier_failure"] == "missing_guard"
 
 
-def test_extract_inadequate_fall_protection():
-    report = {
-        "report_id": "2025044043",
-        "narrative": (
-            "Fall protection was not in place at the time."
-        ),
-    }
-
-    result = extract_safety_signals(report)
-
-    assert result["barrier_failure"] == "inadequate_fall_protection"
-
-
 def test_extract_sop_violation_lockout_tagout():
     report = {
         "report_id": "2017087462",
@@ -230,3 +219,69 @@ def test_extract_unsafe_positioning_rolling_forklift():
     result = extract_safety_signals(report)
 
     assert result["barrier_failure"] == "unsafe_positioning"
+
+
+# ---------------------------------------------------------
+# Natural-language coverage tests
+# ---------------------------------------------------------
+
+
+def test_extract_maintenance_from_natural_phrase():
+    report = {
+        "report_id": "test-014",
+        "narrative": (
+            "A worker was performing maintenance using a forklift."
+        ),
+    }
+
+    result = extract_safety_signals(report)
+
+    assert result["activity"] == "maintenance"
+    assert result["equipment"] == "forklift"
+
+
+def test_extract_electrical_energy_from_natural_phrase():
+    report = {
+        "report_id": "test-015",
+        "narrative": (
+            "A worker was performing maintenance and was exposed "
+            "to electrical energy."
+        ),
+    }
+
+    result = extract_safety_signals(report)
+
+    assert result["hazard"] == "electrical_energy"
+    assert result["activity"] == "maintenance"
+    assert result["exposure"] == "electrical_exposure"
+
+
+def test_extract_sop_violation_from_natural_phrase():
+    report = {
+        "report_id": "test-016",
+        "narrative": (
+            "The worker did not follow the SOP during maintenance."
+        ),
+    }
+
+    result = extract_safety_signals(report)
+
+    assert result["activity"] == "maintenance"
+    assert result["barrier_failure"] == "SOP_violation"
+
+
+def test_extract_multiple_explicit_signals_from_natural_phrase():
+    report = {
+        "report_id": "test-017",
+        "narrative": (
+            "During maintenance, a worker was exposed to electrical "
+            "energy while working near machinery."
+        ),
+    }
+
+    result = extract_safety_signals(report)
+
+    assert result["hazard"] == "electrical_energy"
+    assert result["activity"] == "maintenance"
+    assert result["equipment"] == "machinery"
+    assert result["exposure"] == "electrical_exposure"

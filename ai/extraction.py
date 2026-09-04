@@ -53,6 +53,7 @@ def extract_safety_signals(report: dict[str, Any]) -> dict[str, Any]:
             "electric shock",
             "arc flash",
             "electrical injury",
+            "electrical energy",
         ],
 
         "mobile_equipment": [
@@ -212,6 +213,7 @@ def extract_safety_signals(report: dict[str, Any]) -> dict[str, Any]:
             "voltage was discharged",
             "voltage discharged",
             "indirectly shocked",
+            "exposed to electrical energy",
         ],
 
         # -----------------------------------------------------
@@ -581,6 +583,7 @@ def extract_safety_signals(report: dict[str, Any]) -> dict[str, Any]:
             "procedure was not followed",
             "not following the procedure",
             "violated the procedure",
+            "did not follow the sop",
 
             # Explicit lockout/tagout failures
             "not locked/tagged out",
@@ -779,6 +782,7 @@ def extract_safety_signals(report: dict[str, Any]) -> dict[str, Any]:
         "cleaning a press machine",
         "cleaning out top flash",
         "cleaning out top flash and trimmings",
+        "maintenance",
     ]
 
     for indicator in maintenance_override_indicators:
