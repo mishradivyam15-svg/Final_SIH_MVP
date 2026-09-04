@@ -1,9 +1,15 @@
 """
-Pipeline bridge — thin integration layer between the FastAPI backend
-and the frozen ai/ extraction code.
+Pipeline bridge between the FastAPI backend and the AI pipeline.
 
-This is the ONLY module that imports from the ai/ package, creating a
-clean seam for the backend.
+Flow:
+    Raw reports
+        -> preprocessing
+        -> extraction
+        -> SafetyReport
+        -> RelationshipEngine
+        -> RelationshipGraph
+        -> ClusterEngine
+        -> PrecursorEngine
 """
 
 from __future__ import annotations
@@ -13,6 +19,11 @@ from typing import Any
 
 from ai.preprocessing import preprocess_report
 from ai.extraction import extract_safety_signals
+from ai.embeddings import EmbeddingService
+from ai.relationship import RelationshipEngine
+from ai.relationship_graph import RelationshipGraph
+from ai.clustering import ClusterEngine
+from ai.prioritization import PrecursorEngine
 
 from backend.schemas import (
     AnalysisResponse,
@@ -29,15 +40,7 @@ def run_extraction(
     site: str | None = None,
     source_type: str = "incident",
 ) -> SafetyReport:
-    """
-    Run the frozen Extraction v1 pipeline on a single report.
-
-    Steps:
-        1. Build the raw report dict expected by the ai/ code.
-        2. Preprocess (normalize) the narrative.
-        3. Extract safety signals.
-        4. Return a typed SafetyReport.
-    """
+    """Run preprocessing and Extraction v1 on one report."""
 
     if report_id is None:
         report_id = str(uuid.uuid4())
@@ -57,23 +60,73 @@ def run_extraction(
 
 
 def analyze_relationships(
-    safety_report: SafetyReport,
+    safety_reports: list[SafetyReport],
 ) -> tuple[list[RelationshipResult], list[Precursor]]:
     """
-    Placeholder for the future AI-2 cross-report relationship and
-    precursor analysis pipeline.
+    Run the complete AI-2 relationship and precursor pipeline.
 
-    Returns empty lists until the AI-2 implementation is available.
-
-    When the AI-2 team provides the implementation, only the body of
-    this function needs to change — the API contract stays the same.
+    Steps:
+        1. Create sentence embedding service.
+        2. Compare every unique report pair.
+        3. Build relationship graph.
+        4. Group related reports into precursor candidates.
+        5. Prioritize each precursor candidate.
     """
 
-    # ---------------------------------------------------------
-    # AI-2 pipeline is not yet implemented.
-    # Return empty results so the API shape is stable.
-    # ---------------------------------------------------------
-    return [], []
+    if len(safety_reports) < 2:
+        return [], []
+
+    # Convert Pydantic models into dictionaries because the AI-2
+    # modules operate on mapping-like SafetyReport objects.
+    reports: list[dict[str, object]] = [
+        report.model_dump() for report in safety_reports
+    ]
+
+    # Create the semantic embedding service.
+    embedding_service = EmbeddingService()
+
+    # Create the AI-2 relationship engine.
+    relationship_engine = RelationshipEngine(
+        embedding_service=embedding_service
+    )
+
+    # Build the relationship graph.
+    graph = RelationshipGraph(
+        relationship_engine=relationship_engine
+    )
+
+    graph.build(reports)
+
+    # Return all retained relationship edges.
+    relationships = [
+        RelationshipResult(**edge.as_dict())
+        for edge in graph.edges
+    ]
+
+    # Group related reports into precursor candidates.
+    cluster_engine = ClusterEngine()
+    grouping_result = cluster_engine.group(graph)
+
+    # Map report IDs to reports for prioritization.
+    reports_by_id = {
+        str(report["report_id"]): report
+        for report in reports
+    }
+
+    # Generate prioritized precursor summaries.
+    precursor_engine = PrecursorEngine()
+
+    precursor_results = precursor_engine.summarize_all(
+        grouping_result,
+        reports_by_id,
+    )
+
+    precursors = [
+        Precursor(**precursor.as_dict())
+        for precursor in precursor_results
+    ]
+
+    return relationships, precursors
 
 
 def run_full_analysis(
@@ -84,12 +137,11 @@ def run_full_analysis(
     source_type: str = "incident",
 ) -> AnalysisResponse:
     """
-    Run the complete analysis pipeline:
+    Run extraction for a single report.
 
-        1. Extraction v1  →  SafetyReport
-        2. (Future) AI-2  →  Relationships + Precursors
-
-    Returns an AnalysisResponse ready for JSON serialization.
+    AI-2 cross-report analysis requires multiple reports, so the
+    single-report endpoint returns an extracted SafetyReport while
+    batch analysis performs relationship/precursor detection.
     """
 
     safety_report = run_extraction(
@@ -100,11 +152,50 @@ def run_full_analysis(
         source_type=source_type,
     )
 
-    relationships, precursors = analyze_relationships(safety_report)
-
     return AnalysisResponse(
         safety_report=safety_report,
-        relationships=relationships,
-        precursors=precursors,
-        pipeline_version="extraction-v1",
+        relationships=[],
+        precursors=[],
+        pipeline_version="extraction-v1+ai2",
     )
+
+
+def run_batch_analysis(
+    reports: list[dict[str, Any]],
+) -> dict[str, Any]:
+    """
+    Run extraction + AI-2 analysis for multiple raw reports.
+    """
+
+    safety_reports: list[SafetyReport] = []
+
+    for report in reports:
+        safety_report = run_extraction(
+            narrative=report["narrative"],
+            report_id=report.get("report_id"),
+            timestamp=report.get("timestamp"),
+            site=report.get("site"),
+            source_type=report.get("source_type", "incident"),
+        )
+
+        safety_reports.append(safety_report)
+
+    relationships, precursors = analyze_relationships(
+        safety_reports
+    )
+
+    return {
+        "safety_reports": [
+            report.model_dump()
+            for report in safety_reports
+        ],
+        "relationships": [
+            relationship.model_dump()
+            for relationship in relationships
+        ],
+        "precursors": [
+            precursor.model_dump()
+            for precursor in precursors
+        ],
+        "pipeline_version": "extraction-v1+ai2",
+    }

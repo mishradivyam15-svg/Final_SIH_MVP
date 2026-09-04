@@ -8,10 +8,17 @@ from fastapi import APIRouter, HTTPException, status
 
 from backend.schemas import (
     AnalysisResponse,
+    BatchAnalysisResponse,
+    BatchReportInput,
     ReportInput,
     SafetyReport,
 )
-from backend.pipeline import run_extraction, run_full_analysis
+
+from backend.pipeline import (
+    run_batch_analysis,
+    run_extraction,
+    run_full_analysis,
+)
 
 
 router = APIRouter(prefix="/api/v1")
@@ -32,7 +39,7 @@ def health_check():
 
 
 # -----------------------------------------------------------------
-# Full analysis (Extraction v1 + future AI-2)
+# Full analysis - single report
 # -----------------------------------------------------------------
 
 @router.post(
@@ -44,16 +51,17 @@ def health_check():
 )
 def analyze_report(report: ReportInput):
     """
-    Accept a raw safety / near-miss report, run the full analysis
-    pipeline, and return the structured result.
+    Accept a raw safety / near-miss report and run the full analysis
+    pipeline.
 
     Pipeline steps:
-        1. Preprocessing (text normalization)
-        2. Extraction v1 (rule-based safety signal extraction)
-        3. (Future) AI-2 relationship / precursor analysis
+        1. Preprocessing
+        2. Extraction v1
+        3. AI-2 integration interface
 
-    Steps 1-2 are active.  Step 3 returns empty results until the
-    AI-2 implementation is integrated.
+    Note:
+        Relationship and precursor analysis requires multiple reports,
+        so cross-report AI-2 results are handled by /reports/analyze-batch.
     """
     try:
         result = run_full_analysis(
@@ -63,12 +71,57 @@ def analyze_report(report: ReportInput):
             site=report.site,
             source_type=report.source_type or "incident",
         )
+
         return result
 
     except Exception as exc:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Pipeline error: {exc}",
+        ) from exc
+
+
+# -----------------------------------------------------------------
+# Batch analysis - AI-2 relationship and precursor analysis
+# -----------------------------------------------------------------
+
+@router.post(
+    "/reports/analyze-batch",
+    response_model=BatchAnalysisResponse,
+    summary="Analyze multiple safety reports with AI-2",
+    tags=["reports"],
+    status_code=status.HTTP_200_OK,
+)
+def analyze_reports_batch(batch: BatchReportInput):
+    """
+    Accept multiple safety / near-miss reports and run the complete
+    cross-report AI pipeline.
+
+    Pipeline steps:
+        1. Preprocessing
+        2. Extraction v1
+        3. Relationship detection
+        4. Relationship graph construction
+        5. Precursor grouping
+        6. Precursor prioritization
+
+    Returns:
+        - Structured safety reports
+        - Relationships between reports
+        - Detected precursor groups
+        - Pipeline version
+    """
+    try:
+        result = run_batch_analysis(
+            [report.model_dump() for report in batch.reports]
+        )
+
+        return result
+
+    except Exception as exc:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Batch analysis error: {exc}",
         ) from exc
 
 
@@ -86,7 +139,7 @@ def analyze_report(report: ReportInput):
 def extract_report(report: ReportInput):
     """
     Accept a raw safety / near-miss report and run Extraction v1
-    only (no relationship / precursor analysis).
+    only.
 
     Returns the structured SafetyReport.
     """
@@ -98,6 +151,7 @@ def extract_report(report: ReportInput):
             site=report.site,
             source_type=report.source_type or "incident",
         )
+
         return result
 
     except Exception as exc:
@@ -129,3 +183,13 @@ def get_safety_report_schema():
 def get_analysis_response_schema():
     """Return the full AnalysisResponse JSON schema."""
     return AnalysisResponse.model_json_schema()
+
+
+@router.get(
+    "/schema/batch-analysis-response",
+    summary="BatchAnalysisResponse JSON schema",
+    tags=["schema"],
+)
+def get_batch_analysis_response_schema():
+    """Return the BatchAnalysisResponse JSON schema."""
+    return BatchAnalysisResponse.model_json_schema()
