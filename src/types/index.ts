@@ -163,3 +163,58 @@ export interface AsyncState<T> {
   loading: boolean;
   error: string | null;
 }
+
+// ---------------------------------------------------------------------------
+// Backend API types (matching backend/schemas.py Pydantic models)
+// ---------------------------------------------------------------------------
+
+/** Payload sent to POST /api/v1/reports/analyze or /api/v1/reports/extract */
+export interface ReportSubmission {
+  narrative: string;
+  report_id?: string;
+  timestamp?: string;
+  site?: string;
+  source_type?: string;
+}
+
+/** Backend SafetyReport shape (snake_case, as returned by the API) */
+export interface BackendSafetyReport {
+  report_id: string | null;
+  timestamp: string | null;
+  site: string | null;
+  source_type: string | null;
+  narrative: string | null;
+  hazard: string | null;
+  activity: string | null;
+  equipment: string | null;
+  barrier_failure: string | null;
+  exposure: string | null;
+  severity_potential: string | null;
+  evidence: Record<string, string[]> | null;
+}
+
+/** Backend Precursor placeholder (snake_case) */
+export interface BackendPrecursor {
+  precursor_id: string | null;
+  hazard: string | null;
+  exposure: string | null;
+  barrier_failure: string | null;
+  confidence: number | null;
+  supporting_report_ids: string[];
+}
+
+/** Backend RelationshipResult placeholder (snake_case) */
+export interface BackendRelationshipResult {
+  source_report_id: string | null;
+  related_report_ids: string[];
+  relationship_type: string | null;
+  precursors: BackendPrecursor[];
+}
+
+/** Full response from POST /api/v1/reports/analyze */
+export interface AnalysisResponse {
+  safety_report: BackendSafetyReport;
+  relationships: BackendRelationshipResult[];
+  precursors: BackendPrecursor[];
+  pipeline_version: string;
+}

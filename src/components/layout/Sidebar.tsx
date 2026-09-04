@@ -1,8 +1,9 @@
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, GitMerge, ClipboardList } from 'lucide-react';
+import { LayoutDashboard, GitMerge, ClipboardList, SendHorizonal } from 'lucide-react';
 
 const items = [
   { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { to: '/submit', label: 'Submit Report', icon: SendHorizonal },
   { to: '/dashboard#precursors', label: 'Precursor Alerts', icon: GitMerge },
   { to: '/dashboard#review-queue', label: 'Review Queue', icon: ClipboardList },
 ];
@@ -21,7 +22,7 @@ export function Sidebar() {
               to={to}
               className={({ isActive }) =>
                 `flex items-center gap-2.5 rounded-md px-3 py-2 text-sm font-medium transition ${
-                  isActive && to === '/dashboard'
+                  isActive && !to.includes('#')
                     ? 'bg-brand-50 text-brand-700'
                     : 'text-ink-600 hover:bg-surface-subtle hover:text-ink-900'
                 }`

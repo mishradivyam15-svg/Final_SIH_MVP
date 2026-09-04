@@ -15,6 +15,8 @@ import type {
   PrecursorFilters,
   SubmitReviewPayload,
   ReviewEvent,
+  ReportSubmission,
+  AnalysisResponse,
 } from '@/types';
 import {
   normalizeDashboard,
@@ -129,3 +131,16 @@ export async function submitReview(
   });
   return normalizeReviewEvent(raw);
 }
+
+// ---------------------------------------------------------------------------
+// Report submission → backend extraction pipeline
+// ---------------------------------------------------------------------------
+
+/** POST /api/v1/reports/analyze — submit a report to the real backend */
+export async function submitReport(payload: ReportSubmission): Promise<AnalysisResponse> {
+  return request<AnalysisResponse>('/api/v1/reports/analyze', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+

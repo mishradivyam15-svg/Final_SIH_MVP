@@ -16,6 +16,8 @@ import type {
   SubmitReviewPayload,
   ReviewEvent,
   ReviewAction,
+  ReportSubmission,
+  AnalysisResponse,
 } from '@/types';
 import {
   mockReports,
@@ -176,6 +178,30 @@ export async function submitReview(
   persistState(precursorState);
 
   return delay(event);
+}
+
+/** Mock implementation of report submission / analysis. */
+export async function submitReport(payload: ReportSubmission): Promise<AnalysisResponse> {
+  const mockResult: AnalysisResponse = {
+    safety_report: {
+      report_id: payload.report_id ?? `mock-${Date.now()}`,
+      timestamp: payload.timestamp ?? new Date().toISOString(),
+      site: payload.site ?? null,
+      source_type: payload.source_type ?? 'incident',
+      narrative: payload.narrative,
+      hazard: 'working_at_height',
+      activity: null,
+      equipment: null,
+      barrier_failure: null,
+      exposure: 'fall_from_height',
+      severity_potential: null,
+      evidence: { hazard: ['(mock extraction — connect to backend for real results)'] },
+    },
+    relationships: [],
+    precursors: [],
+    pipeline_version: 'mock-v1',
+  };
+  return delay(mockResult);
 }
 
 /** Test/demo utility: restore the original mock dataset (e.g. between demo runs). */
