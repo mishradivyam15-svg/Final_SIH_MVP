@@ -268,12 +268,20 @@ def _time_window(reports: list[SafetyReport]) -> tuple[str | None, list[str]]:
 def _parse_timestamp(value: object):
     if not isinstance(value, str) or not value.strip():
         return None
+
+    value = value.strip().replace("Z", "+00:00")
+
     try:
-        parsed = datetime.fromisoformat(value.strip().replace("Z", "+00:00"))
+        parsed = datetime.fromisoformat(value)
     except ValueError:
-        return None
+        try:
+            parsed = datetime.strptime(value, "%m/%d/%Y")
+        except ValueError:
+            return None
+
     if parsed.tzinfo is not None:
         return parsed.astimezone(timezone.utc).date()
+
     return parsed.date()
 
 
