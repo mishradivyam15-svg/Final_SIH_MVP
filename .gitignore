@@ -152,3 +152,6 @@ frontend/.env.*
 .Trashes
 ehthumbs.db
 Desktop.ini
+
+# Validation / utility caches
+scripts/__pycache__/
