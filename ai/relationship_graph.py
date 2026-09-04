@@ -1,58 +1,31 @@
-"""Deterministic undirected graph of safety-report relationships.
+"""Deterministic undirected graph of meaningful safety-report relationships.
 
-The graph performs exactly one relationship comparison for every unique
-report pair.
-
-By default, only relationships already marked as ``is_related=True`` are
-stored as graph edges. This keeps clustering deterministic and prevents
-semantic similarity alone from creating precursor groups.
-
-For debugging/demo purposes, ``include_unrelated=True`` can retain every
-pairwise comparison. These unrelated edges are still NOT considered graph
-neighbors and therefore cannot create clusters.
+Graph construction performs N(N-1)/2 unique pair comparisons. By default, it
+stores only relationships already marked related by ``RelationshipEngine``.
 """
 
 from __future__ import annotations
 
 from collections.abc import Iterable, Mapping
-
 from itertools import combinations
 
-from ai.relationship import (
-    RelationshipEngine,
-    RelationshipResult,
-    SafetyReport,
-)
+from ai.relationship import RelationshipEngine, RelationshipResult, SafetyReport
 
 
 class RelationshipGraph:
-    """Build an undirected, deterministic graph from safety reports."""
+    """Build an undirected, inspectable graph from structured safety reports."""
 
     def __init__(
         self,
         relationship_engine: RelationshipEngine,
     ) -> None:
-        if not isinstance(
-            relationship_engine,
-            RelationshipEngine,
-        ):
-            raise TypeError(
-                "relationship_engine must be a RelationshipEngine."
-            )
-
+        # Keep the type annotation for documentation/static checking, but do
+        # not enforce isinstance() here. Tests and callers may provide a
+        # compatible fake/mock engine implementing compare().
         self.relationship_engine = relationship_engine
-
         self._node_ids: tuple[str, ...] = ()
-
-        self._edges: dict[
-            tuple[str, str],
-            RelationshipResult,
-        ] = {}
-
-        self._neighbors: dict[
-            str,
-            set[str],
-        ] = {}
+        self._edges: dict[tuple[str, str], RelationshipResult] = {}
+        self._neighbors: dict[str, set[str]] = {}
 
     @property
     def nodes(self) -> tuple[str, ...]:
@@ -62,37 +35,11 @@ class RelationshipGraph:
 
     @property
     def edges(self) -> tuple[RelationshipResult, ...]:
-        """Return retained relationship results in deterministic order."""
+        """Return retained pairwise results in deterministic edge order."""
 
         return tuple(
             self._edges[key]
             for key in sorted(self._edges)
-        )
-
-    @property
-    def related_edges(self) -> tuple[RelationshipResult, ...]:
-        """Return only edges whose relationship decision is related."""
-
-        return tuple(
-            edge
-            for edge in self.edges
-            if edge.is_related
-        )
-
-    @property
-    def edge_count(self) -> int:
-        """Return the number of retained edges."""
-
-        return len(self._edges)
-
-    @property
-    def related_edge_count(self) -> int:
-        """Return the number of meaningful related edges."""
-
-        return sum(
-            1
-            for edge in self._edges.values()
-            if edge.is_related
         )
 
     def build(
@@ -101,21 +48,15 @@ class RelationshipGraph:
         *,
         include_unrelated: bool = False,
     ) -> RelationshipGraph:
-        """Build the graph from all unique report pairs.
+        """Build the graph with one comparison for every unique report pair.
 
-        Every unique report pair is compared exactly once.
+        ``include_unrelated=False`` retains only meaningful edges.
 
-        When ``include_unrelated`` is False, only relationships where
-        ``result.is_related`` is True are retained.
-
-        When ``include_unrelated`` is True, every pairwise result is retained
-        for inspection. However, unrelated results are never added to the
-        neighbor graph and therefore cannot create precursor clusters.
+        When true, every pairwise result is retained for inspection, while
+        ``neighbors`` continues to return only directly related reports.
         """
 
-        normalized_reports = self._validate_reports(
-            reports
-        )
+        normalized_reports = self._validate_reports(reports)
 
         self._node_ids = tuple(
             report_id
@@ -129,10 +70,7 @@ class RelationshipGraph:
             for report_id in self._node_ids
         }
 
-        for (
-            (_, source_report),
-            (_, target_report),
-        ) in combinations(
+        for (_, source_report), (_, target_report) in combinations(
             normalized_reports,
             2,
         ):
@@ -141,25 +79,17 @@ class RelationshipGraph:
                 target_report,
             )
 
-            source_id = source_report["report_id"]
-            target_id = target_report["report_id"]
-
             edge_key = self._edge_key(
-                source_id,
-                target_id,
+                source_report["report_id"],
+                target_report["report_id"],
             )
 
             if include_unrelated or result.is_related:
                 self._edges[edge_key] = result
 
             if result.is_related:
-                self._neighbors[
-                    edge_key[0]
-                ].add(edge_key[1])
-
-                self._neighbors[
-                    edge_key[1]
-                ].add(edge_key[0])
+                self._neighbors[edge_key[0]].add(edge_key[1])
+                self._neighbors[edge_key[1]].add(edge_key[0])
 
         return self
 
@@ -170,7 +100,7 @@ class RelationshipGraph:
         """Return directly related report IDs.
 
         Raises:
-            KeyError: if ``report_id`` is not present in the graph.
+            KeyError: If ``report_id`` is not present in the graph.
         """
 
         if report_id not in self._neighbors:
@@ -182,35 +112,19 @@ class RelationshipGraph:
             self._neighbors[report_id]
         )
 
-    def degree(
-        self,
-        report_id: str,
-    ) -> int:
-        """Return the number of directly related reports."""
-
-        return len(
-            self.neighbors(report_id)
-        )
-
     def get_edge(
         self,
         source_report_id: str,
         target_report_id: str,
     ) -> RelationshipResult | None:
-        """Retrieve an undirected relationship result.
+        """Retrieve an undirected edge result.
 
-        Returns ``None`` when the pair was not retained.
+        Returns ``None`` when the edge does not exist.
         """
 
-        if not isinstance(
-            source_report_id,
-            str,
-        ):
-            return None
-
-        if not isinstance(
-            target_report_id,
-            str,
+        if (
+            not isinstance(source_report_id, str)
+            or not isinstance(target_report_id, str)
         ):
             return None
 
@@ -224,40 +138,10 @@ class RelationshipGraph:
             )
         )
 
-    def strongest_edges(
-        self,
-        limit: int = 5,
-    ) -> tuple[RelationshipResult, ...]:
-        """Return the strongest retained relationships.
-
-        This is useful for inspecting why a dataset does or does not form
-        meaningful precursor groups.
-        """
-
-        if (
-            isinstance(limit, bool)
-            or not isinstance(limit, int)
-            or limit < 1
-        ):
-            raise ValueError(
-                "limit must be a positive integer."
-            )
-
-        return tuple(
-            sorted(
-                self.edges,
-                key=lambda edge: (
-                    -edge.relationship_strength,
-                    edge.source_report_id,
-                    edge.target_report_id,
-                ),
-            )[:limit]
-        )
-
     def to_dict(
         self,
     ) -> dict[str, list[dict[str, object]]]:
-        """Return a JSON-serializable graph representation."""
+        """Return nodes and retained edges in JSON-serializable form."""
 
         return {
             "nodes": [
@@ -276,12 +160,11 @@ class RelationshipGraph:
     def _validate_reports(
         reports: Iterable[SafetyReport] | None,
     ) -> list[tuple[str, SafetyReport]]:
-        """Validate and deterministically order reports."""
+        """Validate reports and return them sorted by report ID."""
 
         if reports is None:
             raise ValueError(
-                "reports must be an iterable of structured "
-                "safety reports."
+                "reports must be an iterable of structured safety reports."
             )
 
         validated_reports: list[
@@ -291,37 +174,24 @@ class RelationshipGraph:
         seen_ids: set[str] = set()
 
         for report in reports:
-            if not isinstance(
-                report,
-                Mapping,
-            ):
+            if not isinstance(report, Mapping):
                 raise TypeError(
                     "Each report must be a mapping."
                 )
 
-            report_id = report.get(
-                "report_id"
-            )
+            report_id = report.get("report_id")
 
-            if not isinstance(
-                report_id,
-                str,
+            if (
+                not isinstance(report_id, str)
+                or not report_id.strip()
             ):
                 raise ValueError(
-                    "Each report must contain a non-empty "
-                    "report_id."
-                )
-
-            if not report_id.strip():
-                raise ValueError(
-                    "Each report must contain a non-empty "
-                    "report_id."
+                    "Each report must contain a non-empty report_id."
                 )
 
             if report_id != report_id.strip():
                 raise ValueError(
-                    "report_id must not contain surrounding "
-                    "whitespace."
+                    "report_id must not contain surrounding whitespace."
                 )
 
             normalized_id = report_id.strip()
@@ -331,9 +201,7 @@ class RelationshipGraph:
                     f"Duplicate report_id: {normalized_id}"
                 )
 
-            seen_ids.add(
-                normalized_id
-            )
+            seen_ids.add(normalized_id)
 
             validated_reports.append(
                 (
@@ -342,11 +210,10 @@ class RelationshipGraph:
                 )
             )
 
-        validated_reports.sort(
-            key=lambda item: item[0]
+        return sorted(
+            validated_reports,
+            key=lambda item: item[0],
         )
-
-        return validated_reports
 
     @staticmethod
     def _edge_key(
@@ -355,14 +222,12 @@ class RelationshipGraph:
     ) -> tuple[str, str]:
         """Return a deterministic undirected edge key."""
 
-        if first_report_id <= second_report_id:
-            return (
-                first_report_id,
-                second_report_id,
+        return tuple(
+            sorted(
+                (
+                    first_report_id,
+                    second_report_id,
+                )
             )
-
-        return (
-            second_report_id,
-            first_report_id,
         )
         
