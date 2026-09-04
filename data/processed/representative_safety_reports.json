@@ -1,0 +1,219 @@
+[
+  {
+    "report_id": "2020032573",
+    "timestamp": "3/19/2020",
+    "site": "SENECA FALLS, NEW YORK",
+    "source_type": "incident",
+    "narrative": "An employee was working from a 15-foot-high scissor lift, replacing lightbulbs along a ceiling. An overhead crane struck the scissor lift, causing it to tip over. Its basket fell onto a table on the floor, then ejected the employee; the employee suffered a broken elbow, a possibly broken arm, a broken collarbone, and a head injury.",
+    "hazard": "falling_object",
+    "activity": "maintenance",
+    "equipment": "scissor_lift|crane|truck",
+    "barrier_failure": null,
+    "exposure": null,
+    "severity_potential": null,
+    "evidence": {
+      "hazard": [
+        "fell onto"
+      ],
+      "equipment": [
+        "scissor_lift",
+        "crane",
+        "truck"
+      ],
+      "activity": [
+        "replacing"
+      ]
+    }
+  },
+  {
+    "report_id": "2020087536",
+    "timestamp": "8/10/2020",
+    "site": "CHICAGO HEIGHTS, ILLINOIS",
+    "source_type": "incident",
+    "narrative": "An employee was spray-painting the ceiling and upper walls of a dock area. He was working from a heavy-duty plastic utility storage bin/box placed on the forks of a forklift. The box shifted, tossing him to the concrete floor about 9 feet below. He suffered broken ribs.",
+    "hazard": "mobile_equipment",
+    "activity": null,
+    "equipment": "forklift",
+    "barrier_failure": "unsafe_positioning",
+    "exposure": "fall_from_height",
+    "severity_potential": null,
+    "evidence": {
+      "hazard": [
+        "forklift"
+      ],
+      "exposure": [
+        "tossing him to the concrete floor about 9 feet below"
+      ],
+      "barrier_failure": [
+        "working from a heavy-duty plastic utility storage bin/box placed on the forks of a forklift"
+      ],
+      "equipment": [
+        "forklift"
+      ]
+    }
+  },
+  {
+    "report_id": "2016054317",
+    "timestamp": "5/17/2016",
+    "site": "CANONSBURG, PENNSYLVANIA",
+    "source_type": "incident",
+    "narrative": "An employee was trying to unattach the hook from a lifting \"eye\" on the top of a compressor after it was moved when his pinky fingertip was caught and amputated between the hook and the \"eye.\"",
+    "hazard": null,
+    "activity": null,
+    "equipment": null,
+    "barrier_failure": null,
+    "exposure": null,
+    "severity_potential": null,
+    "evidence": {}
+  },
+  {
+    "report_id": "2016054797",
+    "timestamp": "5/31/2016",
+    "site": "GRUVER, TEXAS",
+    "source_type": "incident",
+    "narrative": "An employee was running the steam flaking machine and amputated four fingers on the right hand.",
+    "hazard": null,
+    "activity": "equipment_operation",
+    "equipment": "machinery",
+    "barrier_failure": null,
+    "exposure": null,
+    "severity_potential": null,
+    "evidence": {
+      "equipment": [
+        "machinery"
+      ],
+      "activity": [
+        "running"
+      ]
+    }
+  },
+  {
+    "report_id": "2017087462",
+    "timestamp": "8/4/2017",
+    "site": "SALEM, OHIO",
+    "source_type": "incident",
+    "narrative": "An employee was preparing to clean a press machine and had raised the access door when the door fell and amputated the employee's right index and middle fingers. The press machine was not locked/tagged out at the time.",
+    "hazard": null,
+    "activity": "maintenance",
+    "equipment": "machinery",
+    "barrier_failure": "SOP_violation",
+    "exposure": null,
+    "severity_potential": null,
+    "evidence": {
+      "barrier_failure": [
+        "not locked/tagged out"
+      ],
+      "equipment": [
+        "machinery"
+      ],
+      "activity": [
+        "preparing to clean"
+      ]
+    }
+  },
+  {
+    "report_id": "20191111493",
+    "timestamp": "11/4/2019",
+    "site": "ATLANTA, GEORGIA",
+    "source_type": "incident",
+    "narrative": "An employee was replacing a wire rope on an elevator. A pair of wire rope cutters were on the counterweight. When he started the elevator, the wire rope cutters fell on his foot, causing a fracture and laceration that required surgery.",
+    "hazard": null,
+    "activity": "maintenance",
+    "equipment": null,
+    "barrier_failure": null,
+    "exposure": null,
+    "severity_potential": null,
+    "evidence": {
+      "activity": [
+        "replacing"
+      ]
+    }
+  },
+  {
+    "report_id": "2021098316",
+    "timestamp": "9/27/2021",
+    "site": "CONWAY, NEW HAMPSHIRE",
+    "source_type": "incident",
+    "narrative": "An employee was working under a truck. The truck fell off its lift and pinned the employee, who suffered broken ribs.",
+    "hazard": null,
+    "activity": null,
+    "equipment": "truck",
+    "barrier_failure": null,
+    "exposure": "fall_from_height",
+    "severity_potential": null,
+    "evidence": {
+      "exposure": [
+        "fell off"
+      ],
+      "equipment": [
+        "truck"
+      ]
+    }
+  },
+  {
+    "report_id": "2016098325",
+    "timestamp": "9/2/2016",
+    "site": "FRANKLIN, OHIO",
+    "source_type": "incident",
+    "narrative": "An employee was helping a delivery driver move the dock plate by hand. The driver let go of the dock plate and it fell onto the employee's hand and amputated a finger.",
+    "hazard": "falling_object",
+    "activity": "material_handling",
+    "equipment": null,
+    "barrier_failure": null,
+    "exposure": "falling_object_exposure",
+    "severity_potential": null,
+    "evidence": {
+      "hazard": [
+        "fell onto"
+      ],
+      "exposure": [
+        "fell onto the employee"
+      ],
+      "activity": [
+        "move the"
+      ]
+    }
+  },
+  {
+    "report_id": "2022087696",
+    "timestamp": "8/29/2022",
+    "site": "FORT LAUDERDALE, FLORIDA",
+    "source_type": "incident",
+    "narrative": "An employee was changing light fixtures when he was shocked by the attached wires.",
+    "hazard": null,
+    "activity": "maintenance",
+    "equipment": null,
+    "barrier_failure": null,
+    "exposure": "electrical_exposure",
+    "severity_potential": null,
+    "evidence": {
+      "exposure": [
+        "shocked by"
+      ],
+      "activity": [
+        "fix"
+      ]
+    }
+  },
+  {
+    "report_id": "2024043119",
+    "timestamp": "4/9/2024",
+    "site": "CALERA, OKLAHOMA",
+    "source_type": "incident",
+    "narrative": "An employee was stepping down from a freezer truck to deliver frozen food to a store. He tripped and fell, fracturing his lower left leg.",
+    "hazard": null,
+    "activity": "transport",
+    "equipment": "truck",
+    "barrier_failure": null,
+    "exposure": null,
+    "severity_potential": null,
+    "evidence": {
+      "equipment": [
+        "truck"
+      ],
+      "activity": [
+        "deliver"
+      ]
+    }
+  }
+]
