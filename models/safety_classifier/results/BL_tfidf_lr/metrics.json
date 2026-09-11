@@ -1,0 +1,20 @@
+{
+  "experiment": "BL: TF-IDF + Logistic Regression",
+  "training_time_seconds": 13.054850816726685,
+  "hazard": {
+    "macro_f1": 0.7348327546996566,
+    "weighted_f1": 0.7508549261879615,
+    "accuracy": 0.7501972275442353,
+    "null_precision": 0.5157847932414407,
+    "null_recall": 0.41120170152428215,
+    "null_f1": 0.45759368836291914
+  },
+  "exposure": {
+    "macro_f1": 0.6893365308880338,
+    "weighted_f1": 0.6737484502652674,
+    "accuracy": 0.6629663022652992,
+    "null_precision": 0.9428104575163399,
+    "null_recall": 0.6900538170221248,
+    "null_f1": 0.7968696052480148
+  }
+}

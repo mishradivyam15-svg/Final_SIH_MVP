@@ -1,0 +1,20 @@
+{
+  "experiment": "Exp C (fine-tuned)",
+  "training_time_seconds": 4860.0,
+  "hazard": {
+    "macro_f1": 0.7524849610817915,
+    "weighted_f1": 0.7545434437685342,
+    "accuracy": 0.7590442916713626,
+    "null_precision": 0.5481481481481482,
+    "null_recall": 0.36724565756823824,
+    "null_f1": 0.4398216939078752
+  },
+  "exposure": {
+    "macro_f1": 0.692775375517881,
+    "weighted_f1": 0.6745174980918754,
+    "accuracy": 0.6669108531500056,
+    "null_precision": 0.9392072844134975,
+    "null_recall": 0.6990233207095874,
+    "null_f1": 0.8015083990401097
+  }
+}

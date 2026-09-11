@@ -1,0 +1,82 @@
+{
+  "BL_tfidf_lr": {
+    "experiment": "BL: TF-IDF + Logistic Regression",
+    "training_time_seconds": 13.054850816726685,
+    "hazard": {
+      "macro_f1": 0.7348327546996566,
+      "weighted_f1": 0.7508549261879615,
+      "accuracy": 0.7501972275442353,
+      "null_precision": 0.5157847932414407,
+      "null_recall": 0.41120170152428215,
+      "null_f1": 0.45759368836291914
+    },
+    "exposure": {
+      "macro_f1": 0.6893365308880338,
+      "weighted_f1": 0.6737484502652674,
+      "accuracy": 0.6629663022652992,
+      "null_precision": 0.9428104575163399,
+      "null_recall": 0.6900538170221248,
+      "null_f1": 0.7968696052480148
+    }
+  },
+  "Exp_A": {
+    "experiment": "Exp A",
+    "training_time_seconds": 1162.1194450855255,
+    "hazard": {
+      "macro_f1": 0.589348104546605,
+      "weighted_f1": 0.6690463351714614,
+      "accuracy": 0.6663473458807618,
+      "null_precision": 0.5007890583903208,
+      "null_recall": 0.337468982630273,
+      "null_f1": 0.40321897501058873
+    },
+    "exposure": {
+      "macro_f1": 0.5536949870390314,
+      "weighted_f1": 0.562018189862729,
+      "accuracy": 0.5500394455088471,
+      "null_precision": 0.8745934224792193,
+      "null_recall": 0.4823599760813235,
+      "null_f1": 0.6217882836587872
+    }
+  },
+  "Exp_B": {
+    "experiment": "Exp B",
+    "training_time_seconds": 1681.3677921295166,
+    "hazard": {
+      "macro_f1": 0.6717754871439322,
+      "weighted_f1": 0.6945152176130485,
+      "accuracy": 0.6909726135467148,
+      "null_precision": 0.5012224938875306,
+      "null_recall": 0.3633463310882666,
+      "null_f1": 0.4212905877517468
+    },
+    "exposure": {
+      "macro_f1": 0.6178263877103557,
+      "weighted_f1": 0.6018765126155255,
+      "accuracy": 0.58959765580976,
+      "null_precision": 0.9085662211421628,
+      "null_recall": 0.5961730117600159,
+      "null_f1": 0.7199422313154411
+    }
+  },
+  "Exp_C": {
+    "experiment": "Exp C (fine-tuned)",
+    "training_time_seconds": 4860.0,
+    "hazard": {
+      "macro_f1": 0.7524849610817915,
+      "weighted_f1": 0.7545434437685342,
+      "accuracy": 0.7590442916713626,
+      "null_precision": 0.5481481481481482,
+      "null_recall": 0.36724565756823824,
+      "null_f1": 0.4398216939078752
+    },
+    "exposure": {
+      "macro_f1": 0.692775375517881,
+      "weighted_f1": 0.6745174980918754,
+      "accuracy": 0.6669108531500056,
+      "null_precision": 0.9392072844134975,
+      "null_recall": 0.6990233207095874,
+      "null_f1": 0.8015083990401097
+    }
+  }
+}

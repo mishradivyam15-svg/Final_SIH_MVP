@@ -1,0 +1,18 @@
+Experiment: Exp C (fine-tuned)
+Task: Exposure Classification (9 classes)
+
+                         precision    recall  f1-score   support
+
+                   null       0.94      0.70      0.80      5017
+       fall_from_height       0.90      0.91      0.91      3238
+              caught_in       0.34      0.82      0.48      1359
+         caught_between       0.26      0.71      0.38       700
+              struck_by       0.74      0.36      0.48      5587
+    electrical_exposure       0.85      1.00      0.92       397
+          fire_exposure       0.64      0.99      0.78       207
+      chemical_exposure       0.70      0.97      0.81       272
+falling_object_exposure       0.53      0.92      0.67       969
+
+               accuracy                           0.67     17746
+              macro avg       0.66      0.82      0.69     17746
+           weighted avg       0.76      0.67      0.67     17746

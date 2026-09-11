@@ -1,0 +1,44 @@
+{
+  "experiment": "A",
+  "confidence_filter": [
+    "high"
+  ],
+  "use_confidence_weights": false,
+  "freeze_encoder": true,
+  "fine_tune_after": 0,
+  "frozen_epochs": 5,
+  "finetune_epochs": 5,
+  "batch_size": 64,
+  "max_length": 128,
+  "best_epoch": 4,
+  "best_val_f1": 0.6000242029411695,
+  "training_time": 1162.1194450855255,
+  "hazard_labels": [
+    "null",
+    "working_at_height",
+    "moving_machinery",
+    "mobile_equipment",
+    "electrical_energy",
+    "excavation",
+    "falling_object",
+    "line_of_fire",
+    "lifting_operation",
+    "chemical_exposure",
+    "stored_energy",
+    "slip_trip_fall",
+    "confined_space",
+    "fire_or_hot_work",
+    "hydrocarbon_or_process_hazard"
+  ],
+  "exposure_labels": [
+    "null",
+    "fall_from_height",
+    "caught_in",
+    "caught_between",
+    "struck_by",
+    "electrical_exposure",
+    "fire_exposure",
+    "chemical_exposure",
+    "falling_object_exposure"
+  ]
+}

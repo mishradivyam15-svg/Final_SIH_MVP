@@ -1,0 +1,21 @@
+Experiment: BL: TF-IDF + Logistic Regression
+Task: Hazard Classification (15 classes)
+
+                   precision    recall  f1-score   support
+
+             null       0.52      0.41      0.46      2821
+working_at_height       0.90      0.91      0.90      3117
+ moving_machinery       0.93      0.75      0.83      3636
+ mobile_equipment       0.71      0.74      0.72      1609
+electrical_energy       0.91      0.99      0.95       397
+       excavation       0.45      0.90      0.60        20
+   falling_object       0.56      0.80      0.66       969
+     line_of_fire       0.38      0.51      0.43      1164
+chemical_exposure       0.61      0.96      0.75       273
+    stored_energy       0.70      0.72      0.71       117
+   slip_trip_fall       0.85      0.89      0.87      2654
+ fire_or_hot_work       0.91      0.95      0.93       969
+
+         accuracy                           0.75     17746
+        macro avg       0.70      0.79      0.73     17746
+     weighted avg       0.76      0.75      0.75     17746
