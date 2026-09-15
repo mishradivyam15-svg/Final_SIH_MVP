@@ -23,7 +23,7 @@ export function ReviewQueue({ items }: ReviewQueueProps) {
   }
 
   return (
-    <div className="overflow-hidden rounded-lg border border-ink-300/40 bg-white shadow-card">
+    <div className="overflow-hidden rounded-xl panel-sheen border border-ink-300/40 bg-surface shadow-card">
       <table className="w-full text-left text-sm">
         <thead className="border-b border-ink-300/40 bg-surface-subtle text-xs uppercase tracking-wide text-ink-500">
           <tr>
@@ -36,13 +36,17 @@ export function ReviewQueue({ items }: ReviewQueueProps) {
           </tr>
         </thead>
         <tbody className="divide-y divide-ink-300/30">
-          {items.map((p) => (
-            <tr key={p.id} className="hover:bg-surface-subtle">
+          {items.map((p, i) => (
+            <tr
+              key={p.id}
+              style={{ animationDelay: `${Math.min(i, 10) * 40}ms` }}
+              className="animate-fade-in-up transition-colors duration-150 hover:bg-surface-subtle"
+            >
               <td className="px-4 py-3 font-medium text-ink-900">{p.title}</td>
               <td className="px-4 py-3">
                 <PriorityBadge priority={p.priority} />
               </td>
-              <td className="px-4 py-3 text-ink-700">{p.riskScore}/100</td>
+              <td className="px-4 py-3 font-mono tabular-nums text-ink-700">{p.riskScore}/100</td>
               <td className="px-4 py-3 text-ink-700">
                 {p.reportCount} reports / {p.recurrenceWindowDays}d
               </td>
@@ -52,9 +56,9 @@ export function ReviewQueue({ items }: ReviewQueueProps) {
               <td className="px-4 py-3 text-right">
                 <button
                   onClick={() => navigate(`/precursors/${p.id}`)}
-                  className="text-xs font-semibold text-brand-700 hover:underline"
+                  className="inline-flex transform-gpu items-center gap-1 text-xs font-semibold text-brand-300 transition-all duration-200 ease-out hover:scale-110 hover:text-brand-200 hover:underline active:scale-100"
                 >
-                  Review →
+                  Review <span aria-hidden="true">→</span>
                 </button>
               </td>
             </tr>

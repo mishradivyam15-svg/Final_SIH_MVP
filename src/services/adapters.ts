@@ -120,6 +120,15 @@ export function normalizeReport(raw: unknown): SafetyReport {
         : undefined,
     cause: r.cause != null ? asString(r.cause) : undefined,
     exposure: r.exposure != null ? asString(r.exposure) : undefined,
+    severityPotential:
+      r.severityPotential != null || r.severity_potential != null
+        ? asString(r.severityPotential ?? r.severity_potential)
+        : undefined,
+    sifPotential: asBoolOrUndefined(r.sifPotential ?? r.sif_potential),
+    iogpRule:
+      r.iogpRule != null || r.iogp_life_saving_rule != null
+        ? asString(r.iogpRule ?? r.iogp_life_saving_rule)
+        : undefined,
     narrative: asString(r.narrative ?? r.text ?? r.description, ''),
     signals: asArray(r.signals ?? r.extracted_signals).map(normalizeSignal),
     precursorIds: asArray<unknown>(r.precursorIds ?? r.precursor_ids).map((v) =>
@@ -210,6 +219,11 @@ export function normalizePrecursor(raw: unknown): Precursor {
     activity: asString(r.activity, 'Unknown activity'),
     barrierFailure: asString(r.barrierFailure ?? r.barrier_failure, 'Unknown barrier'),
     site: asString(r.site ?? r.location, 'Unknown site'),
+    iogpRule:
+      r.iogpRule != null || r.iogp_life_saving_rule != null
+        ? asString(r.iogpRule ?? r.iogp_life_saving_rule)
+        : undefined,
+    sifPotential: asBoolOrUndefined(r.sifPotential ?? r.sif_potential),
     reportCount: asNumber(
       r.reportCount ?? r.report_count ?? asArray(r.reportIds ?? r.report_ids).length,
       0

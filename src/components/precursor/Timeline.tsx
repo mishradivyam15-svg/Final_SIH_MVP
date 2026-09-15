@@ -27,12 +27,12 @@ export function Timeline({ reports, precursorTitle }: TimelineProps) {
   }
 
   return (
-    <section className="rounded-lg border border-ink-300/40 bg-white p-6 shadow-card">
+    <section className="rounded-xl panel-sheen border border-ink-300/40 bg-surface p-6 shadow-card">
       <h2 className="mb-4 text-sm font-semibold text-ink-900">Recurrence Timeline</h2>
       <ol className="relative border-l border-ink-300 pl-6">
         {sorted.map((report, idx) => (
           <li key={report.id} className="mb-6 last:mb-0">
-            <span className="absolute -left-[7px] mt-1 h-3 w-3 rounded-full border-2 border-white bg-brand-600" />
+            <span className="absolute -left-[7px] mt-1 h-3 w-3 rounded-full border-2 border-surface bg-brand-500" />
             <p className="text-xs font-semibold uppercase tracking-wide text-ink-500">
               {formatDate(report.date)}
             </p>

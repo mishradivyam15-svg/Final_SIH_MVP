@@ -5,13 +5,241 @@
 @layer base {
   html {
     @apply text-ink-900;
+    color-scheme: dark;
   }
   body {
     @apply bg-surface-subtle antialiased;
-    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    font-family: 'Outfit', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    background-image: radial-gradient(
+      ellipse 1200px 480px at 50% -120px,
+      rgba(53, 104, 171, 0.14),
+      transparent 70%
+    );
+    background-attachment: fixed;
+  }
+  h1,
+  h2,
+  h3 {
+    letter-spacing: -0.015em;
   }
   :focus-visible {
-    @apply outline-none ring-2 ring-brand-600 ring-offset-1;
+    @apply outline-none ring-2 ring-brand-500 ring-offset-1 ring-offset-surface-subtle;
+  }
+  ::selection {
+    background-color: rgba(122, 168, 217, 0.35);
+  }
+}
+
+@layer components {
+  /* Top-left sheen so dark panels read as lit surfaces rather than flat fills. */
+  .panel-sheen {
+    background-image: linear-gradient(155deg, rgba(255, 255, 255, 0.05), transparent 45%);
+  }
+
+  /* Cursor-tracked highlight. Needs --spot-x/--spot-y from useSpotlight and a
+     positioned, overflow-hidden parent. */
+  .spotlight::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 280ms ease-out;
+    background: radial-gradient(
+      340px circle at var(--spot-x, 50%) var(--spot-y, 0px),
+      rgba(122, 168, 217, 0.1),
+      transparent 62%
+    );
+  }
+  .spotlight:hover::before {
+    opacity: 1;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Pointer-following cursor (see components/common/CustomCursor.tsx).
+   Fine pointers only — touch input keeps the platform default.
+--------------------------------------------------------------------------- */
+@media (pointer: fine) {
+  body.cursor-active,
+  body.cursor-active * {
+    cursor: none !important;
+  }
+
+  .cursor-dot,
+  .cursor-ring {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 0;
+    z-index: 70;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 220ms ease-out;
+    will-change: transform;
+  }
+  body.cursor-active .cursor-dot,
+  body.cursor-active .cursor-ring {
+    opacity: 1;
+  }
+
+  /* Both shapes self-center on their point, so size changes never shift
+     the anchor and never fight the per-frame transform above. */
+  .cursor-dot-shape,
+  .cursor-ring-shape {
+    position: absolute;
+    left: 0;
+    top: 0;
+    display: block;
+    border-radius: 9999px;
+    transform: translate(-50%, -50%);
+    transition:
+      width 260ms cubic-bezier(0.16, 1, 0.3, 1),
+      height 260ms cubic-bezier(0.16, 1, 0.3, 1),
+      border-radius 260ms ease,
+      border-color 200ms ease,
+      background-color 200ms ease,
+      box-shadow 200ms ease,
+      opacity 200ms ease;
+  }
+
+  .cursor-dot-shape {
+    width: 6px;
+    height: 6px;
+    background: #dbe7f5;
+  }
+
+  .cursor-ring-shape {
+    width: 30px;
+    height: 30px;
+    border: 1.5px solid var(--cursor-tone, rgba(122, 168, 217, 0.6));
+    box-shadow: 0 0 16px -4px var(--cursor-tone, rgba(122, 168, 217, 0.6));
+  }
+
+  /* Contextual tint — set by [data-cursor-tone] on the hovered element. */
+  body[data-cursor-tone='brand'] {
+    --cursor-tone: rgba(122, 168, 217, 0.75);
+    --cursor-tone-fill: rgba(122, 168, 217, 0.12);
+  }
+  body[data-cursor-tone='high'] {
+    --cursor-tone: rgba(248, 113, 113, 0.85);
+    --cursor-tone-fill: rgba(248, 113, 113, 0.14);
+  }
+  body[data-cursor-tone='medium'] {
+    --cursor-tone: rgba(251, 191, 36, 0.85);
+    --cursor-tone-fill: rgba(251, 191, 36, 0.14);
+  }
+  body[data-cursor-tone='low'] {
+    --cursor-tone: rgba(74, 222, 128, 0.85);
+    --cursor-tone-fill: rgba(74, 222, 128, 0.14);
+  }
+
+  /* Over anything clickable the ring opens up and the dot recedes. */
+  body[data-cursor='interactive'] .cursor-ring-shape {
+    width: 46px;
+    height: 46px;
+    background: var(--cursor-tone-fill, rgba(122, 168, 217, 0.12));
+  }
+  body[data-cursor='interactive'] .cursor-dot-shape {
+    width: 4px;
+    height: 4px;
+    opacity: 0.6;
+  }
+
+  /* Over a text field the ring becomes a caret bar. */
+  body[data-cursor='text'] .cursor-ring-shape {
+    width: 2px;
+    height: 24px;
+    border-radius: 2px;
+    border-color: transparent;
+    background: #dbe7f5;
+    box-shadow: none;
+  }
+  body[data-cursor='text'] .cursor-dot-shape {
+    opacity: 0;
+  }
+
+  /* Press feedback. */
+  body[data-cursor-pressed='true'] .cursor-ring-shape {
+    width: 22px;
+    height: 22px;
+  }
+  body[data-cursor-pressed='true'][data-cursor='interactive'] .cursor-ring-shape {
+    width: 38px;
+    height: 38px;
+  }
+}
+
+/* WebGL constellation backdrop (components/common/AmbientField.tsx).
+   Sits above the body ground but beneath all app content. */
+.ambient-field {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+/* Rotating conic sweep used as a living border on the top alert. Needs
+   @property so the angle is interpolatable; browsers without it just show
+   a static gradient edge instead of animating. */
+@property --sweep-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+.sweep-border::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: conic-gradient(
+    from var(--sweep-angle),
+    transparent 55%,
+    var(--sweep-color, rgba(122, 168, 217, 0.9)) 78%,
+    transparent 92%
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  animation: sweep-rotate 6s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes sweep-rotate {
+  to {
+    --sweep-angle: 360deg;
+  }
+}
+
+/* Fixed film grain — breaks the flatness of large dark areas. */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  opacity: 0.032;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
   }
 }
 
@@ -27,4 +255,118 @@
 /* React Flow attribution removal handled via proOptions; minimal style overrides below */
 .react-flow__edge-text {
   font-size: 10px;
+}
+.react-flow {
+  background-color: transparent;
+}
+.react-flow__controls {
+  box-shadow: none;
+}
+.react-flow__controls-button {
+  background: #1e2530;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  fill: #b7c0cc;
+}
+.react-flow__controls-button:hover {
+  background: #262e3b;
+}
+.react-flow__attribution {
+  display: none;
+}
+
+/* A figure that just changed during a background refresh, so an operator
+   can see *what* moved rather than only that something did. */
+@keyframes value-flash {
+  0%,
+  22% {
+    color: #a9cbea;
+    text-shadow: 0 0 18px rgba(122, 168, 217, 0.85);
+  }
+  100% {
+    color: inherit;
+    text-shadow: none;
+  }
+}
+.value-flash {
+  animation: value-flash 1.4s ease-out;
+}
+
+@keyframes card-flash {
+  0%,
+  22% {
+    box-shadow:
+      0 0 0 1px rgba(122, 168, 217, 0.55),
+      0 0 28px -6px rgba(122, 168, 217, 0.65);
+  }
+  100% {
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.045),
+      0 2px 10px 0 rgba(0, 0, 0, 0.35);
+  }
+}
+.card-flash {
+  animation: card-flash 1.4s ease-out;
+}
+
+/* --- Relationship graph nodes ------------------------------------------- */
+/* Styling lives on this inner card, never on .react-flow__node, because
+   ReactFlow owns that element's transform for positioning. */
+.graph-node-card {
+  border-radius: 8px;
+  padding: 6px 10px;
+  text-align: center;
+  transition:
+    transform 240ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 240ms ease,
+    border-color 240ms ease;
+}
+
+.graph-node-card--report {
+  background: #1e2530;
+  color: #eef1f5;
+  border: 1.5px solid #2b5586;
+}
+
+.graph-node-card--precursor {
+  background: #3a1416;
+  color: #f87171;
+  border: 2px solid #7f2f31;
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-weight: 600;
+  animation: graph-node-pulse 3.2s ease-in-out infinite;
+}
+
+.react-flow__node:hover .graph-node-card--report {
+  transform: scale(1.08);
+  border-color: #5b9bd9;
+  box-shadow: 0 0 20px -4px rgba(91, 155, 217, 0.9);
+}
+
+.react-flow__node:hover .graph-node-card--precursor {
+  transform: scale(1.06);
+  border-color: #f87171;
+  box-shadow: 0 0 26px -4px rgba(248, 113, 113, 0.9);
+}
+
+@keyframes graph-node-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(248, 113, 113, 0.32);
+  }
+  50% {
+    box-shadow: 0 0 22px 4px rgba(248, 113, 113, 0.22);
+  }
+}
+
+/* Flowing dashes along active relationship edges. */
+.react-flow__edge.animated path.react-flow__edge-path {
+  stroke-dasharray: 6 4;
+  animation: graph-edge-flow 0.9s linear infinite;
+}
+
+@keyframes graph-edge-flow {
+  to {
+    stroke-dashoffset: -20;
+  }
 }

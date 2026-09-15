@@ -1003,6 +1003,5 @@ def extract_safety_signals(report: dict[str, Any]) -> dict[str, Any]:
         "equipment": equipment,
         "barrier_failure": barrier_failure,
         "exposure": exposure,
-        "severity_potential": None,
         "evidence": evidence,
     }

@@ -8,7 +8,7 @@ import { FlaskConical } from 'lucide-react';
 export function DemoDataBadge({ className = '' }: { className?: string }) {
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-md border border-amber-300 bg-amber-50 px-2.5 py-1 text-xs font-semibold text-amber-800 ${className}`}
+      className={`inline-flex items-center gap-1.5 rounded-md border border-amber-500/30 bg-amber-500/10 px-2.5 py-1 text-xs font-semibold text-amber-400 ${className}`}
       title="This prototype uses representative demo data, not real OIL statistics."
     >
       <FlaskConical size={13} aria-hidden="true" />

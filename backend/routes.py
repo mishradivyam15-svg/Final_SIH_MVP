@@ -259,7 +259,21 @@ def api_get_relationships(precursor_id: str):
     return get_relationships_for_precursor(precursor_id)
 
 @api_router.get("/reports")
-def api_get_reports_by_ids(ids: str):
+def api_get_reports_by_ids(ids: Optional[str] = None):
+    """
+    With `ids` (comma-separated): return just those reports, in order,
+    skipping any that don't exist — used to hydrate a precursor's
+    contributing reports.
+
+    Without `ids`: return every report analyzed so far, most recent
+    first — powers the "All Reports" browse page.
+    """
+    if not ids:
+        reports = get_all_reports()
+        return sorted(
+            reports, key=lambda r: r.get("timestamp") or "", reverse=True
+        )
+
     report_ids = [r.strip() for r in ids.split(",") if r.strip()]
     reports = []
     for rid in report_ids:

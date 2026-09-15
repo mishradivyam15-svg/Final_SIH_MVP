@@ -34,7 +34,7 @@ export function EvidencePanel({ precursor }: EvidencePanelProps) {
   metrics.push({ label: 'Contributing Reports', value: String(evidence.contributingReportCount) });
 
   return (
-    <section className="rounded-lg border border-ink-300/40 bg-white p-6 shadow-card">
+    <section className="rounded-xl panel-sheen border border-ink-300/40 bg-surface p-6 shadow-card">
       <h2 className="text-sm font-semibold uppercase tracking-wide text-ink-500">
         Why was this alert generated?
       </h2>
@@ -63,7 +63,7 @@ export function EvidencePanel({ precursor }: EvidencePanelProps) {
           {metrics.map((m) => (
             <div key={m.label} className="flex items-center justify-between border-b border-ink-300/20 pb-1.5 sm:block sm:border-none sm:pb-0">
               <dt className="text-xs text-ink-500">{m.label}</dt>
-              <dd className="text-sm font-semibold text-ink-900">{m.value}</dd>
+              <dd className="font-mono text-sm font-semibold tabular-nums text-ink-900">{m.value}</dd>
             </div>
           ))}
         </dl>

@@ -7,11 +7,12 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const VARIANT_CLASSES: Record<NonNullable<ButtonProps['variant']>, string> = {
-  primary: 'bg-brand-700 text-white hover:bg-brand-800 focus-visible:ring-brand-700',
+  primary:
+    'bg-brand-700 text-white shadow-sm hover:bg-brand-800 hover:shadow-glow focus-visible:ring-brand-700',
   secondary:
-    'bg-white text-ink-700 border border-ink-300 hover:bg-surface-subtle focus-visible:ring-brand-700',
+    'bg-surface text-ink-700 border border-ink-300 hover:border-brand-300 hover:bg-surface-subtle focus-visible:ring-brand-700',
   danger:
-    'bg-white text-priority-high border border-priority-highBorder hover:bg-priority-highBg focus-visible:ring-priority-high',
+    'bg-surface text-priority-high border border-priority-highBorder hover:bg-priority-highBg focus-visible:ring-priority-high',
   ghost: 'bg-transparent text-ink-700 hover:bg-surface-muted focus-visible:ring-brand-700',
 };
 
@@ -30,7 +31,7 @@ export function Button({
 }: ButtonProps) {
   return (
     <button
-      className={`inline-flex items-center justify-center gap-2 rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50 ${VARIANT_CLASSES[variant]} ${SIZE_CLASSES[size]} ${className}`}
+      className={`inline-flex transform-gpu items-center justify-center gap-2 rounded-md font-medium transition-all duration-200 ease-out hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100 disabled:active:scale-100 ${VARIANT_CLASSES[variant]} ${SIZE_CLASSES[size]} ${className}`}
       disabled={disabled}
       {...rest}
     >

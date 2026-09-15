@@ -58,13 +58,13 @@ export const RELATIONSHIP_LABEL: Record<RelationshipType, string> = {
 };
 
 export const RELATIONSHIP_COLOR: Record<RelationshipType, string> = {
-  semantic_similarity: '#3568ab',
-  same_hazard: '#b3261e',
-  same_activity: '#8a5a00',
-  same_barrier: '#6b3fa0',
-  same_site: '#1f6f4a',
-  temporal_recurrence: '#0f7d8c',
-  other: '#7c8593',
+  semantic_similarity: '#5b9bd9',
+  same_hazard: '#f87171',
+  same_activity: '#fbbf24',
+  same_barrier: '#b794f6',
+  same_site: '#4ade80',
+  temporal_recurrence: '#2dd4bf',
+  other: '#8a93a1',
 };
 
 export function riskScoreToPriority(score: number): Priority {

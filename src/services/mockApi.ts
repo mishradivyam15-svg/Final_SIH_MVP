@@ -140,6 +140,10 @@ export async function getReportsByIds(ids: string[]): Promise<SafetyReport[]> {
   return delay(found);
 }
 
+export async function getAllReports(): Promise<SafetyReport[]> {
+  return delay([...mockReports]);
+}
+
 export async function submitReview(
   precursorId: string,
   payload: SubmitReviewPayload
@@ -194,7 +198,9 @@ export async function submitReport(payload: ReportSubmission): Promise<AnalysisR
       equipment: null,
       barrier_failure: null,
       exposure: 'fall_from_height',
-      severity_potential: null,
+      severity_potential: 'High',
+      sif_potential: true,
+      iogp_life_saving_rule: 'Working at Height',
       evidence: { hazard: ['(mock extraction — connect to backend for real results)'] },
     },
     relationships: [],

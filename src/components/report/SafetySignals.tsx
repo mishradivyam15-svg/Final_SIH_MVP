@@ -14,10 +14,12 @@ export function SafetySignals({ report }: SafetySignalsProps) {
     { label: 'Barrier Failure', value: report.barrier },
     { label: 'Cause', value: report.cause },
     { label: 'Exposure', value: report.exposure },
+    { label: 'Severity Potential', value: report.severityPotential },
+    { label: 'IOGP Life-Saving Rule', value: report.iogpRule },
   ].filter((f) => f.value);
 
   return (
-    <section className="rounded-lg border border-ink-300/40 bg-white p-6 shadow-card">
+    <section className="rounded-xl panel-sheen border border-ink-300/40 bg-surface p-6 shadow-card">
       <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-ink-500">
         <Tags size={15} aria-hidden="true" />
         Extracted Safety Signals
@@ -47,7 +49,7 @@ export function SafetySignals({ report }: SafetySignalsProps) {
             {report.signals.map((s, i) => (
               <span
                 key={i}
-                className="inline-flex items-center gap-1.5 rounded-md border border-brand-200 bg-brand-50 px-2.5 py-1 text-xs font-medium text-brand-700"
+                className="inline-flex items-center gap-1.5 rounded-md border border-brand-800/60 bg-brand-950 px-2.5 py-1 text-xs font-medium text-brand-300"
               >
                 {s.label}: {s.value}
                 {typeof s.confidence === 'number' && (

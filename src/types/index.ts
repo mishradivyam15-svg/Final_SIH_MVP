@@ -43,6 +43,12 @@ export interface SafetyReport {
   barrier?: string;
   cause?: string;
   exposure?: string;
+  /** "high" | "medium" | "low" — derived precursor severity, when classified. */
+  severityPotential?: string;
+  /** Whether this report matches the SIF-precursor definition (high-energy hazard + confirmed exposure/barrier failure). */
+  sifPotential?: boolean;
+  /** Matching IOGP Life-Saving Rule, when the hazard maps to one. */
+  iogpRule?: string;
   narrative: string;
   /** Structured signals extracted by the AI/ML preprocessing pipeline. */
   signals: ExtractedSignal[];
@@ -107,6 +113,10 @@ export interface Precursor {
   activity: string;
   barrierFailure: string;
   site: string;
+  /** Matching IOGP Life-Saving Rule, when the common hazard maps to one. */
+  iogpRule?: string;
+  /** Whether at least one constituent report meets the SIF-precursor definition. */
+  sifPotential?: boolean;
   reportCount: number;
   recurrenceWindowDays: number;
   shortExplanation: string;
@@ -190,6 +200,8 @@ export interface BackendSafetyReport {
   barrier_failure: string | null;
   exposure: string | null;
   severity_potential: string | null;
+  sif_potential: boolean | null;
+  iogp_life_saving_rule: string | null;
   evidence: Record<string, string[]> | null;
 }
 

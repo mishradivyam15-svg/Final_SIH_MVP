@@ -120,6 +120,12 @@ export async function getReportsByIds(ids: string[]): Promise<SafetyReport[]> {
   return Array.isArray(raw) ? raw.map(normalizeReport) : [];
 }
 
+/** GET /api/reports (no ids) — every report analyzed so far, most recent first */
+export async function getAllReports(): Promise<SafetyReport[]> {
+  const raw = await request<unknown[]>('/api/reports');
+  return Array.isArray(raw) ? raw.map(normalizeReport) : [];
+}
+
 /** POST /api/review */
 export async function submitReview(
   precursorId: string,

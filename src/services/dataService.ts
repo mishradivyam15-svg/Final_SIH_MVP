@@ -24,6 +24,7 @@ export const getPrecursor = impl.getPrecursor;
 export const getRelationships = impl.getRelationships;
 export const getReport = impl.getReport;
 export const getReportsByIds = impl.getReportsByIds;
+export const getAllReports = impl.getAllReports;
 export const submitReview = impl.submitReview;
 
 // submitReport always calls the real backend — it is the primary

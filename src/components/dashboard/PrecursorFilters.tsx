@@ -35,10 +35,10 @@ export function PrecursorFilters({
     (filters.status && filters.status !== 'ALL');
 
   const selectCls =
-    'rounded-md border border-ink-300 bg-white px-2.5 py-1.5 text-xs text-ink-700 focus:border-brand-600 focus:outline-none focus:ring-1 focus:ring-brand-600';
+    'rounded-md border border-ink-300 bg-surface px-2.5 py-1.5 text-xs text-ink-700 transition-colors focus:border-brand-600 focus:outline-none focus:ring-1 focus:ring-brand-600';
 
   return (
-    <div className="flex flex-wrap items-center gap-2 rounded-lg border border-ink-300/40 bg-white p-3 shadow-card">
+    <div className="flex flex-wrap items-center gap-2 rounded-xl panel-sheen border border-ink-300/40 bg-surface p-3 shadow-card">
       <div className="relative min-w-[200px] flex-1">
         <Search
           size={14}
@@ -51,7 +51,7 @@ export function PrecursorFilters({
           onChange={(e) => onChange({ ...filters, search: e.target.value })}
           placeholder="Search precursors, hazards, sites…"
           aria-label="Search precursor patterns"
-          className="w-full rounded-md border border-ink-300 bg-white py-1.5 pl-8 pr-2.5 text-xs text-ink-700 focus:border-brand-600 focus:outline-none focus:ring-1 focus:ring-brand-600"
+          className="w-full rounded-md border border-ink-300 bg-surface py-1.5 pl-8 pr-2.5 text-xs text-ink-700 transition-colors focus:border-brand-600 focus:outline-none focus:ring-1 focus:ring-brand-600"
         />
       </div>
 
@@ -141,7 +141,7 @@ export function PrecursorFilters({
       {hasActiveFilters && (
         <button
           onClick={() => onChange({})}
-          className="inline-flex items-center gap-1 rounded-md px-2 py-1.5 text-xs font-medium text-ink-500 hover:bg-surface-muted hover:text-ink-900"
+          className="inline-flex transform-gpu items-center gap-1 rounded-md px-2 py-1.5 text-xs font-medium text-ink-500 transition-all duration-200 ease-out hover:scale-105 hover:bg-surface-muted hover:text-ink-900 active:scale-[0.97]"
         >
           <X size={13} aria-hidden="true" />
           Clear filters

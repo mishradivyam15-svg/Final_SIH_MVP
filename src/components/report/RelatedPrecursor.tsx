@@ -20,13 +20,13 @@ export function RelatedPrecursor({ precursor }: { precursor: Precursor | null })
   }
 
   return (
-    <section className="rounded-lg border border-ink-300/40 bg-white p-5 shadow-card">
+    <section className="rounded-xl panel-sheen border border-ink-300/40 bg-surface p-5 shadow-card">
       <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-ink-500">
         Related SIF Precursor
       </h2>
       <button
         onClick={() => navigate(`/precursors/${precursor.id}`)}
-        className="flex w-full items-center justify-between rounded-md border border-ink-300/40 bg-surface-subtle p-4 text-left hover:bg-surface-muted"
+        className="flex w-full transform-gpu items-center justify-between rounded-md panel-sheen border border-ink-300/40 bg-surface-subtle p-4 text-left transition-all duration-200 ease-out hover:scale-[1.02] hover:border-brand-300/50 hover:bg-surface-muted"
       >
         <div>
           <PriorityBadge priority={precursor.priority} className="mb-2" />
@@ -47,7 +47,7 @@ export function RelatedReports({ reports }: { reports: SafetyReport[] }) {
   }
 
   return (
-    <section className="rounded-lg border border-ink-300/40 bg-white p-5 shadow-card">
+    <section className="rounded-xl panel-sheen border border-ink-300/40 bg-surface p-5 shadow-card">
       <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-ink-500">
         Other Related Reports
       </h2>
@@ -56,9 +56,9 @@ export function RelatedReports({ reports }: { reports: SafetyReport[] }) {
           <li key={r.id}>
             <button
               onClick={() => navigate(`/reports/${r.id}`)}
-              className="flex w-full items-center justify-between rounded-md px-3 py-2 text-left text-sm hover:bg-surface-subtle"
+              className="flex w-full transform-gpu items-center justify-between rounded-md px-3 py-2 text-left text-sm transition-all duration-200 ease-out hover:scale-[1.02] hover:bg-surface-subtle"
             >
-              <span className="font-medium text-brand-700">{r.displayId}</span>
+              <span className="font-medium text-brand-300">{r.displayId}</span>
               <span className="text-xs text-ink-500">{formatDate(r.date)}</span>
             </button>
           </li>

@@ -7,12 +7,26 @@ interface AppShellProps {
   lastUpdated?: string;
   onRefresh?: () => void;
   refreshing?: boolean;
+  syncing?: boolean;
 }
 
-export function AppShell({ children, lastUpdated, onRefresh, refreshing }: AppShellProps) {
+export function AppShell({
+  children,
+  lastUpdated,
+  onRefresh,
+  refreshing,
+  syncing,
+}: AppShellProps) {
+  // Transparent and stacked above the WebGL backdrop — the body owns the
+  // background colour so the constellation shows through between panels.
   return (
-    <div className="min-h-screen bg-surface-subtle">
-      <Header lastUpdated={lastUpdated} onRefresh={onRefresh} refreshing={refreshing} />
+    <div className="relative z-10 min-h-screen">
+      <Header
+        lastUpdated={lastUpdated}
+        onRefresh={onRefresh}
+        refreshing={refreshing}
+        syncing={syncing}
+      />
       <main className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-6 sm:px-6 lg:flex-row">
         <Sidebar />
         <div className="min-w-0 flex-1">{children}</div>

@@ -16,6 +16,7 @@ from typing import Literal
 
 from ai.clustering import GroupingResult, PrecursorGroup
 from ai.relationship import SafetyReport, normalize_signal
+from ai.sif_classification import IOGP_RULE_MAP, SEVERITY_SCORE
 
 
 @dataclass(frozen=True)
@@ -64,6 +65,8 @@ class Precursor:
     common_barrier_failure: str | None
     time_window: str | None
     evidence: tuple[str, ...]
+    common_iogp_life_saving_rule: str | None = None
+    sif_potential: bool | None = None
     review_status: Literal["pending_review"] = "pending_review"
 
     def as_dict(self) -> dict[str, object]:
@@ -79,6 +82,8 @@ class Precursor:
             "common_barrier_failure": self.common_barrier_failure,
             "time_window": self.time_window,
             "evidence": list(self.evidence),
+            "common_iogp_life_saving_rule": self.common_iogp_life_saving_rule,
+            "sif_potential": self.sif_potential,
             "review_status": self.review_status,
         }
 
@@ -101,6 +106,20 @@ class PrecursorEngine:
         )
         common_barrier, barrier_count, barrier_evidence = _common_signal(
             reports, "barrier_failure", "barrier failure"
+        )
+        # The IOGP rule is a deterministic function of the common hazard
+        # (see ai.sif_classification.IOGP_RULE_MAP), not an independently
+        # voted signal — common_hazard is already normalize_signal()'d
+        # snake_case, matching IOGP_RULE_MAP's keys directly.
+        common_iogp_rule = IOGP_RULE_MAP.get(common_hazard) if common_hazard else None
+        # A group is flagged SIF-potential if ANY constituent report was —
+        # a single confirmed high-energy/uncontrolled-exposure report is
+        # enough to warrant review of the whole recurring pattern.
+        sif_flags = [report.get("sif_potential") for report in reports]
+        group_sif_potential = (
+            True if any(flag is True for flag in sif_flags)
+            else False if any(flag is not None for flag in sif_flags)
+            else None
         )
         report_count = len(reports)
         supporting_edges = tuple(edge for edge in group.supporting_edges if edge.is_related)
@@ -126,6 +145,10 @@ class PrecursorEngine:
         evidence = [f"{report_count} reports form this candidate precursor group."]
         evidence.extend(hazard_evidence)
         evidence.extend(barrier_evidence)
+        if common_iogp_rule:
+            evidence.append(f"Matches IOGP Life-Saving Rule: {common_iogp_rule}.")
+        if group_sif_potential is True:
+            evidence.append("SIF-potential: at least one report in this group is a confirmed SIF precursor.")
         evidence.append(f"{len(supporting_edges)} supporting relationships connect this group.")
         for edge in supporting_edges:
             for edge_evidence in edge.evidence:
@@ -161,6 +184,8 @@ class PrecursorEngine:
             common_barrier_failure=common_barrier,
             time_window=time_window,
             evidence=tuple(evidence),
+            common_iogp_life_saving_rule=common_iogp_rule,
+            sif_potential=group_sif_potential,
         )
 
     def summarize_all(
@@ -245,6 +270,10 @@ def _barrier_failure_severity(reports: list[SafetyReport]) -> tuple[float, int, 
 def _normalized_severity(value: object) -> float | None:
     if isinstance(value, bool) or value is None:
         return None
+    if isinstance(value, str):
+        label_score = SEVERITY_SCORE.get(value.strip().lower())
+        if label_score is not None:
+            return label_score
     try:
         numeric_value = float(value)
     except (TypeError, ValueError):

@@ -31,15 +31,23 @@ def update_analysis_results(precursors: list[dict], relationships: list[dict]) -
     # Update precursors while preserving review history
     for p in precursors:
         pid = p["precursor_id"]
+        # AI-2 always creates new precursors with review_status
+        # "pending_review" — translate that to the dashboard's "OPEN"
+        # vocabulary. Without this, p.get("review_status", "OPEN") never
+        # falls back to "OPEN" (the key is always present), so freshly
+        # created precursors never matched the review-queue filter below.
+        raw_status = p.get("review_status", "pending_review")
         # Convert schema names to frontend expected names
         frontend_p = {
             "precursor_id": pid,
             "title": p.get("title", "Untitled Precursor"),
             "priority": p.get("priority", "LOW"),
             "risk_score": p.get("priority_score", 0),
-            "status": p.get("review_status", "OPEN"),
+            "status": "OPEN" if raw_status == "pending_review" else raw_status,
             "hazard": p.get("common_hazard", "Unknown"),
             "barrier_failure": p.get("common_barrier_failure", "Unknown"),
+            "iogp_life_saving_rule": p.get("common_iogp_life_saving_rule"),
+            "sif_potential": p.get("sif_potential"),
             "report_ids": p.get("report_ids", []),
             "evidence": {
                 "summary_points": p.get("evidence", [])

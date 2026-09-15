@@ -64,7 +64,7 @@ export default function ReportDetail() {
         <ReportHeader report={report} />
 
         {/* Transformation strip — makes the pipeline visually obvious */}
-        <div className="flex flex-wrap items-center gap-2 rounded-lg border border-ink-300/40 bg-white px-4 py-3 shadow-card text-xs font-medium text-ink-500">
+        <div className="flex flex-wrap items-center gap-2 rounded-xl panel-sheen border border-ink-300/40 bg-surface px-4 py-3 shadow-card text-xs font-medium text-ink-500">
           <span className="flex items-center gap-1.5 rounded bg-surface-muted px-2 py-1">
             <FileText size={13} aria-hidden="true" /> Raw Report
           </span>

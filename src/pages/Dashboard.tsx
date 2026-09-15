@@ -15,8 +15,13 @@ import { ErrorState } from '@/components/common/ErrorState';
 import { EmptyState } from '@/components/common/EmptyState';
 import { SearchX } from 'lucide-react';
 
+/** How often the dashboard re-polls the backend in the background. */
+const POLL_INTERVAL_MS = 15_000;
+
 export default function Dashboard() {
-  const { data, loading, error, refetch } = useAsync(getDashboard, []);
+  const { data, loading, error, refetch, syncing } = useAsync(getDashboard, [], {
+    pollMs: POLL_INTERVAL_MS,
+  });
   const [filters, setFilters] = useState<FiltersType>({});
   const location = useLocation();
 
@@ -71,7 +76,12 @@ export default function Dashboard() {
   }
 
   return (
-    <AppShell lastUpdated={data?.overview.lastUpdated} onRefresh={refetch} refreshing={loading}>
+    <AppShell
+      lastUpdated={data?.overview.lastUpdated}
+      onRefresh={refetch}
+      refreshing={loading}
+      syncing={syncing}
+    >
       <div className="space-y-6">
         {loading || !data ? (
           <OverviewCardsSkeleton />
@@ -90,7 +100,11 @@ export default function Dashboard() {
           />
         )}
 
-        <div id="precursors" className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <div
+          id="precursors"
+          className="grid animate-fade-in-up grid-cols-1 gap-6 lg:grid-cols-3"
+          style={{ animationDelay: '80ms' }}
+        >
           <div className="lg:col-span-2 space-y-4">
             <h2 className="text-sm font-semibold uppercase tracking-wide text-ink-500">
               Precursor Patterns
@@ -113,7 +127,7 @@ export default function Dashboard() {
                 action={
                   <button
                     onClick={() => setFilters({})}
-                    className="text-xs font-semibold text-brand-700 hover:underline"
+                    className="inline-block transform-gpu text-xs font-semibold text-brand-300 transition-all duration-200 ease-out hover:scale-110 hover:underline active:scale-100"
                   >
                     Clear filters
                   </button>
@@ -121,8 +135,8 @@ export default function Dashboard() {
               />
             ) : (
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                {filteredPrecursors.map((p) => (
-                  <PrecursorCard key={p.id} precursor={p} />
+                {filteredPrecursors.map((p, i) => (
+                  <PrecursorCard key={p.id} precursor={p} index={i} />
                 ))}
               </div>
             )}
@@ -140,7 +154,11 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div id="review-queue" className="space-y-4">
+        <div
+          id="review-queue"
+          className="animate-fade-in-up space-y-4"
+          style={{ animationDelay: '140ms' }}
+        >
           <h2 className="text-sm font-semibold uppercase tracking-wide text-ink-500">
             Review Queue
           </h2>

@@ -40,7 +40,7 @@ export function ContributingReports({ reports }: ContributingReportsProps) {
   }
 
   return (
-    <section className="rounded-lg border border-ink-300/40 bg-white shadow-card">
+    <section className="rounded-xl panel-sheen border border-ink-300/40 bg-surface shadow-card">
       <div className="flex items-center justify-between border-b border-ink-300/30 px-5 py-3">
         <h2 className="text-sm font-semibold text-ink-900">
           Contributing Reports ({reports.length})
@@ -54,7 +54,7 @@ export function ContributingReports({ reports }: ContributingReportsProps) {
             id="sort-reports"
             value={sortKey}
             onChange={(e) => setSortKey(e.target.value as SortKey)}
-            className="rounded-md border border-ink-300 bg-white px-2 py-1 text-xs focus:border-brand-600 focus:outline-none focus:ring-1 focus:ring-brand-600"
+            className="rounded-md border border-ink-300 bg-surface px-2 py-1 text-xs focus:border-brand-600 focus:outline-none focus:ring-1 focus:ring-brand-600"
           >
             <option value="similarity">Relationship strength</option>
             <option value="date">Date</option>
@@ -68,17 +68,17 @@ export function ContributingReports({ reports }: ContributingReportsProps) {
           <li key={report.id}>
             <button
               onClick={() => navigate(`/reports/${report.id}`)}
-              className="flex w-full flex-col gap-1 px-5 py-4 text-left hover:bg-surface-subtle"
+              className="flex w-full transform-gpu flex-col gap-1 px-5 py-4 text-left transition-all duration-200 ease-out hover:scale-[1.01] hover:bg-surface-subtle"
             >
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <span className="text-sm font-semibold text-brand-700">{report.displayId}</span>
+                <span className="text-sm font-semibold text-brand-300">{report.displayId}</span>
                 <div className="flex items-center gap-2 text-xs text-ink-500">
                   <span className="rounded bg-surface-muted px-1.5 py-0.5">
                     {REPORT_TYPE_LABEL[report.type]}
                   </span>
                   <span>{formatDate(report.date)}</span>
                   {typeof report.relationshipScore === 'number' && (
-                    <span className="rounded bg-brand-50 px-1.5 py-0.5 font-medium text-brand-700">
+                    <span className="rounded bg-brand-950 px-1.5 py-0.5 font-medium text-brand-300">
                       {Math.round(report.relationshipScore * 100)}% match
                     </span>
                   )}

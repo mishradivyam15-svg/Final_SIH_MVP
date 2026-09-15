@@ -54,7 +54,7 @@ export function ReviewActions({ precursorId, currentStatus, onStatusChange }: Re
   const isTerminal = currentStatus === 'CONFIRMED' || currentStatus === 'DISMISSED';
 
   return (
-    <section className="rounded-lg border border-ink-300/40 bg-white p-6 shadow-card">
+    <section className="rounded-xl panel-sheen border border-ink-300/40 bg-surface p-6 shadow-card">
       <h2 className="mb-1 text-sm font-semibold text-ink-900">HSE Review Action</h2>
       <p className="mb-4 text-xs text-ink-500">
         Record the HSE team's decision on this precursor alert.

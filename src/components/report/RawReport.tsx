@@ -9,7 +9,7 @@ export function RawReport({ narrative }: { narrative: string }) {
   const display = expanded || !isLong ? narrative : `${narrative.slice(0, TRUNCATE_LENGTH)}…`;
 
   return (
-    <section className="rounded-lg border border-ink-300/40 bg-white p-6 shadow-card">
+    <section className="rounded-xl panel-sheen border border-ink-300/40 bg-surface p-6 shadow-card">
       <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-ink-500">
         <FileText size={15} aria-hidden="true" />
         Raw Report Narrative
@@ -24,7 +24,7 @@ export function RawReport({ narrative }: { narrative: string }) {
       {isLong && (
         <button
           onClick={() => setExpanded((v) => !v)}
-          className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-brand-700 hover:underline"
+          className="mt-2 inline-flex origin-left transform-gpu items-center gap-1 text-xs font-semibold text-brand-300 transition-all duration-200 ease-out hover:scale-110 hover:underline active:scale-100"
         >
           {expanded ? (
             <>

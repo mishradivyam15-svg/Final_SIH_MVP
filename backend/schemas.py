@@ -77,6 +77,8 @@ class SafetyReport(BaseModel):
     barrier_failure: Optional[str] = None
     exposure: Optional[str] = None
     severity_potential: Optional[str] = None
+    sif_potential: Optional[bool] = None
+    iogp_life_saving_rule: Optional[str] = None
     evidence: Optional[dict[str, Any]] = None
     hazard_confidence: Optional[float] = None
     exposure_confidence: Optional[float] = None
@@ -130,6 +132,9 @@ class Precursor(BaseModel):
     evidence: list[str] = Field(
         default_factory=list
     )
+
+    common_iogp_life_saving_rule: Optional[str] = None
+    sif_potential: Optional[bool] = None
 
     review_status: str = "pending_review"
 

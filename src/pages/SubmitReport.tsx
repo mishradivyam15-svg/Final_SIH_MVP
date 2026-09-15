@@ -15,6 +15,7 @@ import {
   Target,
   Construction,
   FileText,
+  BookOpen,
 } from 'lucide-react';
 
 type SubmitState = 'idle' | 'loading' | 'success' | 'error';
@@ -82,7 +83,7 @@ export default function SubmitReport() {
         {/* Form card */}
         <form
           onSubmit={handleSubmit}
-          className="rounded-lg border border-ink-300/40 bg-white p-6 shadow-card space-y-5"
+          className="rounded-xl panel-sheen border border-ink-300/40 bg-surface p-6 shadow-card space-y-5"
         >
           {/* Narrative */}
           <div className="space-y-1.5">
@@ -138,7 +139,7 @@ export default function SubmitReport() {
             <button
               type="submit"
               disabled={!narrative.trim() || submitState === 'loading'}
-              className="inline-flex items-center gap-2 rounded-md bg-brand-700 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-brand-800 disabled:opacity-50 disabled:cursor-not-allowed transition"
+              className="inline-flex items-center gap-2 rounded-md bg-brand-700 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-all duration-150 ease-out hover:scale-105 hover:bg-brand-800 hover:shadow-glow active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100 disabled:active:scale-100"
             >
               {submitState === 'loading' ? (
                 <Loader2 size={15} className="animate-spin" aria-hidden="true" />
@@ -151,7 +152,7 @@ export default function SubmitReport() {
               <button
                 type="button"
                 onClick={handleReset}
-                className="text-sm font-medium text-ink-500 hover:text-ink-700 underline"
+                className="inline-block transform-gpu text-sm font-medium text-ink-500 underline transition-all duration-200 ease-out hover:scale-105 hover:text-ink-700"
               >
                 Submit another
               </button>
@@ -161,7 +162,7 @@ export default function SubmitReport() {
 
         {/* Error state */}
         {submitState === 'error' && (
-          <div className="rounded-lg border border-priority-highBorder bg-priority-highBg p-4 flex items-start gap-3">
+          <div className="rounded-xl border border-priority-highBorder bg-priority-highBg p-4 flex items-start gap-3">
             <AlertTriangle size={18} className="mt-0.5 shrink-0 text-priority-high" />
             <div>
               <p className="text-sm font-semibold text-priority-high">Analysis Failed</p>
@@ -174,20 +175,20 @@ export default function SubmitReport() {
         {submitState === 'success' && result && (
           <div className="space-y-4">
             {/* Success banner */}
-            <div className="rounded-lg border border-priority-lowBorder bg-priority-lowBg p-4 flex items-start gap-3">
+            <div className="rounded-xl border border-priority-lowBorder bg-priority-lowBg p-4 flex items-start gap-3">
               <CheckCircle2 size={18} className="mt-0.5 shrink-0 text-priority-low" />
               <div>
                 <p className="text-sm font-semibold text-priority-low">Analysis Complete</p>
                 <p className="text-sm text-ink-700 mt-1">
-                  Pipeline: <code className="bg-white px-1 rounded text-xs">{result.pipeline_version}</code>
+                  Pipeline: <code className="rounded bg-black/20 px-1 font-mono text-xs">{result.pipeline_version}</code>
                   {' · '}
-                  Report ID: <code className="bg-white px-1 rounded text-xs">{result.safety_report.report_id}</code>
+                  Report ID: <code className="rounded bg-black/20 px-1 font-mono text-xs">{result.safety_report.report_id}</code>
                 </p>
               </div>
             </div>
 
             {/* Extracted signals grid */}
-            <div className="rounded-lg border border-ink-300/40 bg-white shadow-card overflow-hidden">
+            <div className="rounded-xl panel-sheen border border-ink-300/40 bg-surface shadow-card overflow-hidden">
               <div className="border-b border-ink-300/40 bg-surface-subtle px-5 py-3">
                 <h2 className="text-sm font-bold text-ink-900">Extracted Safety Signals</h2>
               </div>
@@ -208,7 +209,7 @@ export default function SubmitReport() {
                   icon={Activity}
                   label="Activity"
                   value={result.safety_report.activity}
-                  colorClass="text-brand-700"
+                  colorClass="text-brand-300"
                 />
                 <SignalCard
                   icon={Wrench}
@@ -228,13 +229,35 @@ export default function SubmitReport() {
                   value={result.safety_report.severity_potential}
                   colorClass="text-ink-500"
                 />
+                <SignalCard
+                  icon={ShieldAlert}
+                  label="SIF Potential"
+                  value={
+                    result.safety_report.sif_potential === true
+                      ? 'Yes'
+                      : result.safety_report.sif_potential === false
+                        ? 'No'
+                        : null
+                  }
+                  colorClass={
+                    result.safety_report.sif_potential
+                      ? 'text-priority-high'
+                      : 'text-priority-low'
+                  }
+                />
+                <SignalCard
+                  icon={BookOpen}
+                  label="IOGP Life-Saving Rule"
+                  value={result.safety_report.iogp_life_saving_rule}
+                  colorClass="text-brand-300"
+                />
               </div>
             </div>
 
             {/* Evidence */}
             {result.safety_report.evidence &&
               Object.keys(result.safety_report.evidence).length > 0 && (
-                <div className="rounded-lg border border-ink-300/40 bg-white shadow-card overflow-hidden">
+                <div className="rounded-xl panel-sheen border border-ink-300/40 bg-surface shadow-card overflow-hidden">
                   <div className="border-b border-ink-300/40 bg-surface-subtle px-5 py-3">
                     <h2 className="text-sm font-bold text-ink-900">Supporting Evidence</h2>
                   </div>
@@ -259,7 +282,7 @@ export default function SubmitReport() {
               )}
 
             {/* Raw narrative */}
-            <div className="rounded-lg border border-ink-300/40 bg-white shadow-card overflow-hidden">
+            <div className="rounded-xl panel-sheen border border-ink-300/40 bg-surface shadow-card overflow-hidden">
               <div className="border-b border-ink-300/40 bg-surface-subtle px-5 py-3">
                 <h2 className="text-sm font-bold text-ink-900">Processed Narrative</h2>
               </div>
@@ -272,7 +295,7 @@ export default function SubmitReport() {
 
             {/* AI-2 placeholder info */}
             {result.relationships.length === 0 && result.precursors.length === 0 && (
-              <div className="rounded-lg border border-ink-300/30 bg-surface-muted p-4 text-center">
+              <div className="rounded-xl border border-ink-300/30 bg-surface-muted p-4 text-center">
                 <p className="text-xs text-ink-500">
                   Cross-report relationships and SIF precursor detection (AI-2 pipeline) will appear
                   here once integrated. Currently returns empty results.
@@ -302,7 +325,7 @@ function SignalCard({
   colorClass: string;
 }) {
   return (
-    <div className="bg-white p-4 flex items-start gap-3">
+    <div className="bg-surface p-4 flex items-start gap-3">
       <Icon size={16} className={`mt-0.5 shrink-0 ${colorClass}`} aria-hidden="true" />
       <div>
         <p className="text-xs font-semibold uppercase tracking-wide text-ink-400">{label}</p>

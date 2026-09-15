@@ -23,14 +23,14 @@ export function Modal({ open, onClose, title, children, footer }: ModalProps) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-ink-900/40 p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm"
       role="dialog"
       aria-modal="true"
       aria-labelledby="modal-title"
       onClick={onClose}
     >
       <div
-        className="w-full max-w-md rounded-lg bg-white shadow-panel"
+        className="w-full max-w-md rounded-xl bg-surface shadow-panel"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between border-b border-ink-300/40 px-5 py-4">
@@ -40,7 +40,7 @@ export function Modal({ open, onClose, title, children, footer }: ModalProps) {
           <button
             onClick={onClose}
             aria-label="Close dialog"
-            className="rounded-md p-1 text-ink-500 hover:bg-surface-muted hover:text-ink-900"
+            className="transform-gpu rounded-md p-1 text-ink-500 transition-all duration-200 ease-out hover:scale-110 hover:bg-surface-muted hover:text-ink-900 active:scale-95"
           >
             <X size={18} />
           </button>

@@ -8,7 +8,7 @@ interface ErrorStateProps {
 
 export function ErrorState({ message, onRetry }: ErrorStateProps) {
   return (
-    <div className="flex flex-col items-center justify-center rounded-lg border border-priority-highBorder bg-priority-highBg px-6 py-10 text-center">
+    <div className="flex flex-col items-center justify-center rounded-xl border border-priority-highBorder bg-priority-highBg px-6 py-10 text-center">
       <AlertOctagon size={28} className="mb-3 text-priority-high" aria-hidden="true" />
       <p className="text-sm font-medium text-priority-high">Unable to load this data.</p>
       <p className="mt-1 max-w-sm text-sm text-ink-700">

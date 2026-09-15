@@ -26,6 +26,7 @@ from ai.relationship import RelationshipEngine
 from ai.relationship_graph import RelationshipGraph
 from ai.clustering import ClusterEngine
 from ai.prioritization import PrecursorEngine
+from ai.sif_classification import classify_sif
 
 from backend.schemas import (
     AnalysisResponse,
@@ -131,7 +132,12 @@ def run_extraction(
     barrier_failure = rule_result.get("barrier_failure")
     if barrier_failure:
         barrier_failure = barrier_failure.replace("_", " ").title()
-    severity_potential = rule_result.get("severity_potential")
+
+    # SIF-potential + IOGP Life-Saving Rule tagging — a deterministic
+    # classification derived from the final (ML-preferred) hazard and
+    # exposure signals. See ai/sif_classification.py for the rationale.
+    sif_result = classify_sif(hazard, exposure, barrier_failure)
+    severity_potential = sif_result["severity_potential"]
     if severity_potential:
         severity_potential = severity_potential.replace("_", " ").title()
 
@@ -147,6 +153,8 @@ def run_extraction(
         barrier_failure=barrier_failure,
         exposure=exposure,
         severity_potential=severity_potential,
+        sif_potential=sif_result["sif_potential"],
+        iogp_life_saving_rule=sif_result["iogp_life_saving_rule"],
         evidence=rule_result.get("evidence"),
         hazard_confidence=hazard_confidence,
         exposure_confidence=exposure_confidence,
