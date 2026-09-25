@@ -24,9 +24,9 @@ from backend.pipeline import (
 from typing import Optional, List, Dict, Any
 from pydantic import BaseModel
 from backend.db import (
-    add_report, get_report, get_all_reports, update_analysis_results,
+    add_report, update_report, get_report, get_all_reports, update_analysis_results,
     get_dashboard_data, get_precursors, get_precursor, add_review_event,
-    get_relationships_for_precursor, reports_db
+    get_relationships_for_precursor
 )
 
 api_router = APIRouter(prefix="/api")
@@ -91,14 +91,14 @@ def analyze_report(report: ReportInput):
         )
 
         # -----------------------------------------------------------------
-        # Dynamic in-memory update for browse/detail endpoints
+        # Persist for browse/detail endpoints
         # -----------------------------------------------------------------
         raw_report_dict = report.model_dump()
         add_report(raw_report_dict)
         
         # Also cache the extracted SafetyReport so GET /api/reports/:id has extraction info
         safety_rep_dict = result.safety_report.model_dump()
-        reports_db[report.report_id].update(safety_rep_dict)
+        update_report(report.report_id, safety_rep_dict)
         
         all_raw = get_all_reports()
         if len(all_raw) >= 2:

@@ -25,6 +25,36 @@ DEFAULT_CHECKPOINT = os.path.join(
     REPO_ROOT, "models", "safety_classifier", "best_model.pt"
 )
 
+# The checkpoint is gitignored (too large for a normal commit), so a
+# deployed backend never has models/ populated. It's mirrored on the
+# Hugging Face Hub and downloaded there on first use instead — local dev
+# keeps using the file already on disk, so this changes nothing for anyone
+# who has it.
+HF_MODEL_REPO = os.environ.get(
+    "SIF_MODEL_REPO", "Divyam1512/sif-precursor-safety-classifier"
+)
+HF_MODEL_FILENAME = "best_model.pt"
+
+
+def _resolve_checkpoint_path(checkpoint_path: str) -> str | None:
+    """Return a local path to the checkpoint, downloading it from the
+    Hugging Face Hub if it isn't already on disk. Cached by huggingface_hub
+    after the first download, so this only costs time on a cold start."""
+
+    if os.path.exists(checkpoint_path):
+        return checkpoint_path
+
+    try:
+        from huggingface_hub import hf_hub_download
+
+        print(f"[SafetySignalPredictor] Downloading checkpoint from "
+              f"{HF_MODEL_REPO}...")
+        return hf_hub_download(repo_id=HF_MODEL_REPO, filename=HF_MODEL_FILENAME)
+    except Exception as exc:
+        print(f"[SafetySignalPredictor] Could not fetch checkpoint from "
+              f"{HF_MODEL_REPO}: {exc}")
+        return None
+
 
 class SafetySignalPredictor:
     """
@@ -56,9 +86,10 @@ class SafetySignalPredictor:
             n_exposure_classes=len(EXPOSURE_LABELS),
         )
 
-        if os.path.exists(checkpoint_path):
+        resolved_path = _resolve_checkpoint_path(checkpoint_path)
+        if resolved_path:
             checkpoint = torch.load(
-                checkpoint_path,
+                resolved_path,
                 map_location=self.device,
                 weights_only=True,
             )

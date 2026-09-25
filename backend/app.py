@@ -4,11 +4,28 @@ FastAPI application factory for the SIF Precursor backend.
 
 from __future__ import annotations
 
+import os
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 
 from backend.routes import router, api_router
+
+# Always-allowed local dev origins, plus anything from ALLOWED_ORIGINS (a
+# comma-separated env var) so the deployed frontend's domain can be added
+# without a code change/redeploy.
+_DEFAULT_ORIGINS = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "https://final-sih-mvp.vercel.app",
+]
+
+
+def _allowed_origins() -> list[str]:
+    extra = os.environ.get("ALLOWED_ORIGINS", "")
+    extra_origins = [origin.strip() for origin in extra.split(",") if origin.strip()]
+    return _DEFAULT_ORIGINS + extra_origins
 
 
 def create_app() -> FastAPI:
@@ -27,14 +44,12 @@ def create_app() -> FastAPI:
     )
 
     # ---------------------------------------------------------
-    # CORS — allow the frontend dev server to connect.
+    # CORS — allow the frontend dev server and deployed frontend
+    # to connect.
     # ---------------------------------------------------------
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=[
-            "http://localhost:5173",
-            "http://127.0.0.1:5173",
-        ],
+        allow_origins=_allowed_origins(),
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],

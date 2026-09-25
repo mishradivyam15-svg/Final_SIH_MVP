@@ -61,6 +61,25 @@ def _get_predictor():
     return _predictor
 
 
+# ── Lazy-loaded embedding service (singleton) ───────────────────
+# Previously a fresh EmbeddingService() — and the sentence-transformer
+# model inside it — was constructed on every single analyze_relationships()
+# call, i.e. every report submission once 2+ reports exist. That reloaded
+# ~90MB of weights from disk on every request and briefly held two live
+# copies in memory during the reload, on top of the separately-loaded
+# hazard/exposure classifier's own copy of the same base encoder.
+_embedding_service = None
+
+
+def _get_embedding_service():
+    """Load the sentence-embedding model on first call (lazy init)."""
+    global _embedding_service
+    if _embedding_service is None:
+        _embedding_service = EmbeddingService()
+        logger.info("Embedding service loaded successfully")
+    return _embedding_service
+
+
 def run_extraction(
     narrative: str,
     report_id: str | None = None,
@@ -185,8 +204,9 @@ def analyze_relationships(
         report.model_dump() for report in safety_reports
     ]
 
-    # Create the semantic embedding service.
-    embedding_service = EmbeddingService()
+    # Reuse the singleton embedding service instead of loading a fresh
+    # model copy on every call.
+    embedding_service = _get_embedding_service()
 
     # Create the AI-2 relationship engine.
     relationship_engine = RelationshipEngine(
